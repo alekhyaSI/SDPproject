@@ -1,0 +1,69 @@
+package com.tutorfinder.controller;
+
+import com.tutorfinder.model.User;
+import com.tutorfinder.service.UserService;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+//final project
+@RestController
+@RequestMapping("/user")
+@CrossOrigin("*") // allow frontend urls all
+public class UserController {
+
+    @Autowired
+    private UserService userService;
+
+    // ✅ Register
+    @PostMapping("/register")
+    public ResponseEntity<User> register(@RequestBody User user) {
+        User registeredUser = userService.registerUser(user);
+        return ResponseEntity.ok(registeredUser);
+    }
+
+    // ✅ Login
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody User loginRequest) {
+        User user = userService.loginUser(loginRequest.getEmail(), loginRequest.getPassword());
+        if (user != null) {
+            return ResponseEntity.ok(user);
+        } else {
+            return ResponseEntity.badRequest().body("Invalid email or password");
+        }
+    }
+
+    // ✅ Update user
+    @PutMapping("/update/{id}")
+    public ResponseEntity<User> updateUser(@PathVariable("id") Long id,
+                                           @RequestBody User updatedUser) {
+        return ResponseEntity.ok(userService.updateUser(id, updatedUser));
+    }
+
+    // ✅ Delete user
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<String> deleteUser(@PathVariable("id") Long id) {
+        userService.deleteUser(id);
+        return ResponseEntity.ok("User deleted successfully");
+    }
+    
+ // Get all students
+    @GetMapping("/students")
+    public ResponseEntity<List<User>> getAllStudents() {
+        List<User> students = userService.getAllUsers()
+                                         .stream()
+                                         .filter(u -> "student".equalsIgnoreCase(u.getRole()))
+                                         .toList();
+        return ResponseEntity.ok(students);
+    }
+
+
+    // ✅ Test endpoint
+    @GetMapping("/")
+    public String hello() {
+        return "Spring Boot is running";
+    }
+}

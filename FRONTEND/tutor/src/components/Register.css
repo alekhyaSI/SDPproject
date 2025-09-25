@@ -1,0 +1,97 @@
+/* General container */
+.register-container {
+  font-family: Arial, sans-serif;
+  color: #333;
+  background: linear-gradient(to bottom right, #f0f7ff, #e0e7ff);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center; /* horizontal center */
+  align-items: flex-start; /* keep top alignment */
+  padding: 10px 20px 0 20px;
+ /* reduce top padding */
+  box-sizing: border-box;
+}
+
+
+/* Form card */
+.register-form {
+  background: #fff;
+  padding: 40px 30px;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+  width: 100%;
+  max-width: 450px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Heading */
+.register-container h2 {
+  text-align: center; /* heading at top center */
+  font-size: 32px;
+  font-weight: bold;
+  margin-bottom: 25px;
+  color: #1e40af; /* normal theme color */
+}
+
+/* Labels and Inputs */
+.register-form label {
+  display: flex;
+  flex-direction: column;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.register-form input,
+.register-form select {
+  margin-top: 8px;
+  padding: 12px 15px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  outline: none;
+  transition: 0.2s;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.register-form input:focus,
+.register-form select:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 10px rgba(37, 99, 235, 0.3);
+}
+
+/* Button */
+.register-btn {
+  padding: 15px;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: bold;
+  background: linear-gradient(to right, #2563eb, #1e40af);
+  color: #fff;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.register-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 5px 15px rgba(37, 99, 235, 0.4);
+}
+
+/* Role-specific fields spacing */
+.register-form label input,
+.register-form label select {
+  margin-top: 5px;
+}
+
+/* Responsive */
+@media (max-width: 500px) {
+  .register-form {
+    padding: 30px 20px;
+  }
+
+  .register-container h2 {
+    font-size: 28px;
+  }
+}

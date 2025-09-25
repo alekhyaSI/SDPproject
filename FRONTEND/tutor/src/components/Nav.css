@@ -1,0 +1,69 @@
+/* Nav.css */
+
+/* Navbar container */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 30px;
+  background-color: #f8f8f8; /* light background */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #333; /* normal dark text */
+}
+
+/* Left section (logo) */
+.navbar-left .logo {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #333; /* normal dark color */
+  cursor: pointer;
+}
+
+/* Right section (links) */
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+  list-style: none;
+}
+
+/* Navbar items */
+.navbar-right li {
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 0.3s, transform 0.3s;
+}
+
+.navbar-right li:hover {
+  color: #7873f5; /* subtle hover color */
+  transform: scale(1.05);
+}
+
+/* Links */
+.navbar-right li a {
+  color: #333;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.navbar-right li a:hover {
+  color: #7873f5;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .navbar {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 15px 20px;
+  }
+  .navbar-right {
+    gap: 15px;
+    margin-top: 10px;
+  }
+}
