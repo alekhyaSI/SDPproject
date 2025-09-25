@@ -1,0 +1,48 @@
+services:
+  mysqlpro:
+    image: mysql:8
+    container_name: mysql-db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: sdpdb
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - springboot-mysql-net
+
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  backend:
+    image: lasya06tech/sdchometutorbackend:latest
+    container_name: springboot
+    ports:
+      - "2026:2025"
+    depends_on:
+      - mysqlpro
+    restart: on-failure
+    networks:
+      - springboot-mysql-net
+
+  frontend:
+    image: lasya06tech/sdchometutorfrontend:latest
+    container_name: react
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    restart: on-failure
+    networks:
+      - springboot-mysql-net
+
+volumes:
+  mysql_data:
+
+networks:
+  springboot-mysql-net:
