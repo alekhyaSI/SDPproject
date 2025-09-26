@@ -20,7 +20,7 @@ services:
       start_period: 30s
 
   backend:
-    image: lasya06tech/sdchometutorbackend:latest
+    image: lasya06tech/tutorbackend:latest
     container_name: springboot
     ports:
       - "2026:2025"
@@ -31,7 +31,7 @@ services:
       - springboot-mysql-net
 
   frontend:
-    image: lasya06tech/sdchometutorfrontend:latest
+    image: lasya06tech/tutorfrontend:latest
     container_name: react
     ports:
       - "3000:80"
