@@ -1,0 +1,140 @@
+/* ===== Profile Container ===== */
+.profile-container {
+  max-width: 850px;
+  margin: 40px auto;
+  padding: 30px;
+  background: #ffffff; /* keep it clean white card */
+  border-radius: 12px;
+  color: #1e1e2f;
+  font-family: "Poppins", sans-serif;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* ===== Heading ===== */
+.profile-container h2 {
+  text-align: center;
+  margin-bottom: 25px;
+  font-size: 2rem;
+  color: #0077ff; /* same blue as homepage accent */
+  font-weight: bold;
+}
+
+/* ===== Form Section ===== */
+.profile-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* ===== Labels & Inputs ===== */
+.profile-form label {
+  display: flex;
+  flex-direction: column;
+  font-weight: 500;
+  font-size: 0.95rem;
+  color: #333;
+}
+
+.profile-form input,
+.profile-form textarea {
+  margin-top: 6px;
+  padding: 12px 14px;
+  border: 1px solid #d0d7e2;
+  border-radius: 8px;
+  background: #f9fbff;
+  color: #1e1e2f;
+  font-size: 0.95rem;
+  transition: 0.2s;
+}
+
+.profile-form input:focus,
+.profile-form textarea:focus {
+  border-color: #0077ff;
+  outline: none;
+  box-shadow: 0 0 6px rgba(0, 119, 255, 0.3);
+}
+
+.profile-form textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+/* ===== Subjects & Availability Section ===== */
+.subject-entry {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.subject-entry input {
+  flex: 1;
+}
+
+.subject-entry button {
+  background: #ff4b5c;
+  border: none;
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.2s ease-in-out;
+}
+
+.subject-entry button:hover {
+  background: #e63946;
+}
+
+/* Add Subject Button */
+.profile-form > button {
+  align-self: flex-start;
+  background: #0077ff;
+  border: none;
+  padding: 10px 16px;
+  color: #fff;
+  font-weight: 500;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.profile-form > button:hover {
+  background: #005fcc;
+}
+
+/* ===== Action Buttons (Save / Delete) ===== */
+.profile-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.profile-actions button {
+  padding: 12px 18px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: 0.2s ease-in-out;
+}
+
+/* Save Button */
+.profile-actions button:first-child {
+  background: #0077ff;
+  color: #fff;
+}
+
+.profile-actions button:first-child:hover {
+  background: #005fcc;
+}
+
+/* Delete Button */
+.delete-btn {
+  background: #ff4b5c;
+  color: #fff;
+}
+
+.delete-btn:hover {
+  background: #e63946;
+}

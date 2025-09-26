@@ -1,19 +1,27 @@
-/* General container */
+/* ===== General container ===== */
 .register-container {
   font-family: Arial, sans-serif;
   color: #333;
   background: linear-gradient(to bottom right, #f0f7ff, #e0e7ff);
   min-height: 100vh;
   display: flex;
-  justify-content: center; /* horizontal center */
-  align-items: flex-start; /* keep top alignment */
-  padding: 10px 20px 0 20px;
- /* reduce top padding */
+  flex-direction: column; /* vertical stacking */
+  align-items: center;    /* center horizontally */
+  padding: 40px 20px 20px 20px;
   box-sizing: border-box;
 }
 
+/* ===== Heading ===== */
+.register-container h2 {
+  text-align: center;
+  font-size: 32px;
+  font-weight: bold;
+  margin-top: 0px;
+  margin-bottom: 1px;
+  color: #1e40af;
+}
 
-/* Form card */
+/* ===== Form card ===== */
 .register-form {
   background: #fff;
   padding: 40px 30px;
@@ -26,16 +34,7 @@
   gap: 20px;
 }
 
-/* Heading */
-.register-container h2 {
-  text-align: center; /* heading at top center */
-  font-size: 32px;
-  font-weight: bold;
-  margin-bottom: 25px;
-  color: #1e40af; /* normal theme color */
-}
-
-/* Labels and Inputs */
+/* ===== Labels and Inputs ===== */
 .register-form label {
   display: flex;
   flex-direction: column;
@@ -61,7 +60,7 @@
   box-shadow: 0 0 10px rgba(37, 99, 235, 0.3);
 }
 
-/* Button */
+/* ===== Button ===== */
 .register-btn {
   padding: 15px;
   border: none;
@@ -79,13 +78,8 @@
   box-shadow: 0 5px 15px rgba(37, 99, 235, 0.4);
 }
 
-/* Role-specific fields spacing */
-.register-form label input,
-.register-form label select {
-  margin-top: 5px;
-}
 
-/* Responsive */
+/* ===== Responsive ===== */
 @media (max-width: 500px) {
   .register-form {
     padding: 30px 20px;
@@ -93,5 +87,29 @@
 
   .register-container h2 {
     font-size: 28px;
+    margin-bottom: 20px;
   }
+}
+/* ===== Labels and Inputs ===== */
+.register-form input,
+.register-form select {
+  margin-top: 8px;
+  padding: 12px 15px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  outline: none;
+  transition: 0.2s;
+  width: 100%;
+  box-sizing: border-box;
+  background: #fff;        /* White background for input/select */
+  color: #111;             /* Dark text for readability */
+  appearance: none;        /* Remove default arrow styling (optional) */
+}
+
+/* Optional: Custom arrow for select */
+.register-form select {
+  background-image: url("data:image/svg+xml,%3Csvg fill='%23333' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 16px 16px;
 }
