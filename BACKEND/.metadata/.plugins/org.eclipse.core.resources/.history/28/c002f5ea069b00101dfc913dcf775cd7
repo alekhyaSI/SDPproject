@@ -1,0 +1,10 @@
+package com.tutorfinder.repository;
+
+import com.tutorfinder.model.StudentTutorMapping;
+import org.springframework.data.jpa.repository.JpaRepository;
+import java.util.List;
+
+public interface StudentTutorMappingRepository extends JpaRepository<StudentTutorMapping, Long> {
+    List<StudentTutorMapping> findByStudentId(Long studentId);
+    List<StudentTutorMapping> findByTutorId(Long tutorId);
+}

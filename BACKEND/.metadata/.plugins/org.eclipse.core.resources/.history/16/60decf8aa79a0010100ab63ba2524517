@@ -1,0 +1,60 @@
+package com.tutorfinder.service;
+
+import com.tutorfinder.dto.StudentProfileDTO;
+import com.tutorfinder.dto.TutorProfileDTO;
+import com.tutorfinder.model.Assignment;
+import com.tutorfinder.repository.AssignmentRepository;
+import com.tutorfinder.repository.StudentProfileRepository;
+import com.tutorfinder.repository.TutorProfileRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+@Service
+public class AdminService {
+
+    @Autowired
+    private StudentProfileRepository studentRepo;
+
+    @Autowired
+    private TutorProfileRepository tutorRepo;
+
+    @Autowired
+    private AssignmentRepository assignmentRepo;
+
+    // Get all students
+    public List<StudentProfileDTO> getAllStudents() {
+        return studentRepo.findAll().stream().map(StudentProfileDTO::new).toList();
+    }
+
+    // Get all tutors
+    public List<TutorProfileDTO> getAllTutors() {
+        return tutorRepo.findAll().stream().map(TutorProfileDTO::new).toList();
+    }
+
+    // Assign tutor intelligently
+    public void assignTutorToStudent(Long studentId, Long tutorId) {
+        Assignment assignment = new Assignment();
+        assignment.setStudentId(studentId);
+        assignment.setTutorId(tutorId);
+        assignmentRepo.save(assignment);
+    }
+
+    // Get matching tutors for a student
+    public List<TutorProfileDTO> getMatchingTutors(Long studentId) {
+        StudentProfileDTO student = new StudentProfileDTO(studentRepo.findById(studentId).orElseThrow());
+        List<TutorProfileDTO> allTutors = getAllTutors();
+
+        return allTutors.stream().filter(tutor -> 
+            tutor.getSubjectsAvailability().stream().anyMatch(ts ->
+                student.getSubjectsAvailability().stream().anyMatch(ss ->
+                    ss.getSubject().equalsIgnoreCase(ts.getSubject()) &&
+                    ss.getAvailability().replaceAll("\\s","").equalsIgnoreCase(ts.getAvailability().replaceAll("\\s",""))
+                )
+            )
+        ).toList();
+    }
+}
+}

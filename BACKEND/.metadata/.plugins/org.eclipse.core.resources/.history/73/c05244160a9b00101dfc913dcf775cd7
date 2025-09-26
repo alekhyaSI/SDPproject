@@ -1,0 +1,47 @@
+package com.tutorfinder.controller;
+
+import com.tutorfinder.model.TutorProfile;
+import com.tutorfinder.service.TutorProfileService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Optional;
+
+@RestController
+@RequestMapping("/admin/tutors")
+@CrossOrigin("*")
+public class TutorProfileController {
+
+    @Autowired
+    private TutorProfileService tutorService;
+
+    // Get all tutors
+    @GetMapping
+    public ResponseEntity<List<TutorProfile>> getAllTutors() {
+        return ResponseEntity.ok(tutorService.getAllTutors());
+    }
+
+    // Get tutor by ID
+    @GetMapping("/{id}")
+    public ResponseEntity<TutorProfile> getTutorById(@PathVariable Long id) {
+        Optional<TutorProfile> tutor = tutorService.getTutorById(id);
+        return tutor.map(ResponseEntity::ok)
+                    .orElse(ResponseEntity.notFound().build());
+    }
+
+    // Create or update tutor
+    @PostMapping
+    public ResponseEntity<TutorProfile> saveTutor(@RequestBody TutorProfile tutor) {
+        TutorProfile savedTutor = tutorService.saveTutor(tutor);
+        return ResponseEntity.ok(savedTutor);
+    }
+
+    // Delete tutor
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteTutor(@PathVariable Long id) {
+        tutorService.deleteTutor(id);
+        return ResponseEntity.ok("Tutor deleted successfully");
+    }
+}

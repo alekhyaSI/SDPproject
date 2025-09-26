@@ -1,0 +1,30 @@
+package com.tutorfinder.dto;
+
+import java.util.List;
+
+public class TutorProfileDTO {
+    private Long id;
+    private String name;
+    private String email;
+    private List<SubjectAvailabilityDTO> subjectsAvailability;
+    private Integer experience;
+    private String bio;
+    private Integer hourlyRate;
+    private String location;
+
+    public TutorProfileDTO() {}
+
+    public TutorProfileDTO(Long id, String name, String email, List<SubjectAvailabilityDTO> subjectsAvailability,
+                           Integer experience, String bio, Integer hourlyRate, String location) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.subjectsAvailability = subjectsAvailability;
+        this.experience = experience;
+        this.bio = bio;
+        this.hourlyRate = hourlyRate;
+        this.location = location;
+    }
+
+    // getters and setters
+}

@@ -1,0 +1,36 @@
+package com.tutorfinder.service;
+
+import com.tutorfinder.model.TutorProfile;
+import com.tutorfinder.repository.TutorProfileRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Optional;
+
+@Service
+public class TutorProfileService {
+
+    @Autowired
+    private TutorProfileRepository tutorRepository;
+
+    // Get all tutors
+    public List<TutorProfile> getAllTutors() {
+        return tutorRepository.findAll();
+    }
+
+    // Get tutor by ID
+    public Optional<TutorProfile> getTutorById(Long id) {
+        return tutorRepository.findById(id);
+    }
+
+    // Create or update tutor
+    public TutorProfile saveTutor(TutorProfile tutor) {
+        return tutorRepository.save(tutor);
+    }
+
+    // Delete tutor
+    public void deleteTutor(Long id) {
+        tutorRepository.deleteById(id);
+    }
+}

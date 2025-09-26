@@ -1,0 +1,32 @@
+@RestController
+@RequestMapping("/admin")
+@CrossOrigin("*")
+public class AdminController {
+
+    @Autowired
+    private AdminService adminService;
+
+    @GetMapping("/students")
+    public List<StudentProfileDTO> getAllStudents() {
+        return adminService.getAllStudents();
+    }
+
+    @GetMapping("/tutors")
+    public List<TutorProfileDTO> getAllTutors() {
+        return adminService.getAllTutors();
+    }
+
+    // Get matching tutors for a student
+    @GetMapping("/students/{id}/matching-tutors")
+    public List<TutorProfileDTO> getMatchingTutors(@PathVariable Long id) {
+        return adminService.getMatchingTutorsForStudent(id);
+    }
+
+    @PostMapping("/assign")
+    public ResponseEntity<String> assignTutor(@RequestBody Map<String, Long> body) {
+        Long studentId = body.get("studentId");
+        Long tutorId = body.get("tutorId");
+        adminService.assignTutorToStudent(studentId, tutorId);
+        return ResponseEntity.ok("Assigned successfully");
+    }
+}

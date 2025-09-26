@@ -1,0 +1,44 @@
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tutorfinder.dto.SubjectAvailabilityDTO;
+import com.tutorfinder.dto.StudentProfileDTO;
+import com.tutorfinder.dto.TutorProfileDTO;
+import com.tutorfinder.model.TutorProfile;
+
+import java.util.List;
+
+@Service
+public class AdminMappingService {
+
+    @Autowired
+    private TutorProfileRepository tutorRepo;
+
+    private ObjectMapper mapper = new ObjectMapper();
+
+    private List<SubjectAvailabilityDTO> parseSubjects(String json) {
+        if (json == null || json.isEmpty()) return List.of();
+        try {
+            return mapper.readValue(json, new TypeReference<List<SubjectAvailabilityDTO>>() {});
+        } catch (Exception e) {
+            throw new RuntimeException("Error parsing subjects JSON", e);
+        }
+    }
+
+    public List<TutorProfileDTO> getMatchingTutorsForStudent(StudentProfileDTO student) {
+        List<TutorProfile> allTutors = tutorRepo.findAll();
+
+        return allTutors.stream()
+                .filter(tutor -> {
+                    List<SubjectAvailabilityDTO> tutorSubjects = parseSubjects(tutor.getSubjectsAvailabilityJson());
+                    return tutorSubjects.stream().anyMatch(ts ->
+                            student.getAvailability().stream().anyMatch(ss ->
+                                    ss.getSubject().equalsIgnoreCase(ts.getSubject())
+                                            && ss.getAvailability().replaceAll("\\s", "")
+                                            .equalsIgnoreCase(ts.getAvailability().replaceAll("\\s", ""))
+                            )
+                    );
+                })
+                .map(TutorProfileDTO::new) // convert to DTO
+                .toList();
+    }
+}

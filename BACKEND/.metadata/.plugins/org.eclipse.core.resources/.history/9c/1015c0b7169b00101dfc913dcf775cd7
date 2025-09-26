@@ -1,0 +1,69 @@
+package com.tutorfinder.service;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tutorfinder.dto.StudentProfileDTO;
+import com.tutorfinder.dto.StudentProfileDTO.SubjectAvailabilityDTO;
+import com.tutorfinder.model.StudentProfile;
+import com.tutorfinder.repository.StudentProfileRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Service
+public class StudentProfileService {
+
+    @Autowired
+    private StudentProfileRepository repository;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    public void saveOrUpdateProfile(Long userId, StudentProfileDTO dto) throws Exception {
+        StudentProfile profile = repository.findByUserId(userId).orElse(new StudentProfile());
+        profile.setUserId(userId);
+        profile.setName(dto.getName());
+        profile.setEmail(dto.getEmail());
+        profile.setPhone(dto.getPhone());
+        profile.setLocation(dto.getLocation());
+        profile.setBio(dto.getBio());
+
+        String subjectsJson = objectMapper.writeValueAsString(dto.getSubjectsAvailability());
+        profile.setSubjectsAvailabilityJson(subjectsJson);
+
+        repository.save(profile);
+    }
+
+    public StudentProfileDTO getProfileWithUserInfo(Long userId) throws Exception {
+        StudentProfile profile = repository.findByUserId(userId).orElse(new StudentProfile());
+        StudentProfileDTO dto = new StudentProfileDTO();
+        dto.setName(profile.getName());
+        dto.setEmail(profile.getEmail());
+        dto.setPhone(profile.getPhone());
+        dto.setLocation(profile.getLocation());
+        dto.setBio(profile.getBio());
+
+        List<SubjectAvailabilityDTO> subjects;
+        if (profile.getSubjectsAvailabilityJson() != null && !profile.getSubjectsAvailabilityJson().isEmpty()) {
+            subjects = objectMapper.readValue(profile.getSubjectsAvailabilityJson(), new TypeReference<List<SubjectAvailabilityDTO>>() {});
+        } else {
+            subjects = List.of();
+        }
+        dto.setSubjectsAvailability(subjects);
+        return dto;
+    }
+
+    public void deleteProfile(Long userId) {
+        repository.deleteByUserId(userId);
+    }
+    
+    // Add this method:
+    public List<StudentProfileDTO> getAllProfiles() {
+        return studentRepository.findAll().stream()
+                .map(StudentProfileDTO::new)
+                .collect(Collectors.toList());
+    }
+
+}

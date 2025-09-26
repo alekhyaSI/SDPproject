@@ -1,0 +1,38 @@
+package com.tutorfinder.model;
+
+import jakarta.persistence.*;
+
+@Entity
+public class StudentTutorMapping {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne
+    @JoinColumn(name = "student_id", nullable = false)
+    private StudentProfile student;
+
+    @ManyToOne
+    @JoinColumn(name = "tutor_id", nullable = false)
+    private TutorProfile tutor;
+
+    private String subject;
+    private String availability;
+
+    // --- Getters & Setters ---
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+
+    public StudentProfile getStudent() { return student; }
+    public void setStudent(StudentProfile student) { this.student = student; }
+
+    public TutorProfile getTutor() { return tutor; }
+    public void setTutor(TutorProfile tutor) { this.tutor = tutor; }
+
+    public String getSubject() { return subject; }
+    public void setSubject(String subject) { this.subject = subject; }
+
+    public String getAvailability() { return availability; }
+    public void setAvailability(String availability) { this.availability = availability; }
+}

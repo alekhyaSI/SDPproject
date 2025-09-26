@@ -1,0 +1,47 @@
+package com.tutorfinder.dto;
+
+public class TutorProfileDTO {
+    private Long id;
+    private String name;
+    private String email;
+    private String subjects;
+    private Integer experience;
+    private String bio;
+    private Integer hourlyRate;
+    private String location;
+    private String availability;
+
+    public TutorProfileDTO(Long id, String name, String email, String subjects,
+                           Integer experience, String bio, Integer hourlyRate,
+                           String location, String availability) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.subjects = subjects;
+        this.experience = experience;
+        this.bio = bio;
+        this.hourlyRate = hourlyRate;
+        this.location = location;
+        this.availability = availability;
+    }
+
+    // Getters and setters
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
+    public String getSubjects() { return subjects; }
+    public void setSubjects(String subjects) { this.subjects = subjects; }
+    public Integer getExperience() { return experience; }
+    public void setExperience(Integer experience) { this.experience = experience; }
+    public String getBio() { return bio; }
+    public void setBio(String bio) { this.bio = bio; }
+    public Integer getHourlyRate() { return hourlyRate; }
+    public void setHourlyRate(Integer hourlyRate) { this.hourlyRate = hourlyRate; }
+    public String getLocation() { return location; }
+    public void setLocation(String location) { this.location = location; }
+    public String getAvailability() { return availability; }
+    public void setAvailability(String availability) { this.availability = availability; }
+}

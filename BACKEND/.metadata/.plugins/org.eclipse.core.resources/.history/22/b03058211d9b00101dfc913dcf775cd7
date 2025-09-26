@@ -1,0 +1,106 @@
+package com.tutorfinder.service;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tutorfinder.dto.StudentProfileDTO;
+import com.tutorfinder.dto.StudentTutorMappingDTO;
+import com.tutorfinder.dto.TutorProfileDTO;
+import com.tutorfinder.model.StudentProfile;
+import com.tutorfinder.model.TutorProfile;
+import com.tutorfinder.repository.StudentProfileRepository;
+import com.tutorfinder.repository.TutorProfileRepository;
+import org.springframework.stereotype.Service;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Service
+public class AdminMappingService {
+
+    private final StudentProfileRepository studentRepo;
+    private final TutorProfileRepository tutorRepo;
+    private final ObjectMapper objectMapper;
+
+    public AdminMappingService(StudentProfileRepository studentRepo,
+                               TutorProfileRepository tutorRepo,
+                               ObjectMapper objectMapper) {
+        this.studentRepo = studentRepo;
+        this.tutorRepo = tutorRepo;
+        this.objectMapper = objectMapper;
+    }
+
+    public List<TutorProfileDTO> getMatchingTutorsForStudent(Long studentId) {
+        StudentProfile student = studentRepo.findById(studentId)
+                .orElseThrow(() -> new RuntimeException("Student not found"));
+
+        // parse student subjects
+        List<StudentProfileDTO.SubjectAvailabilityDTO> studentSubjects =
+                parseJson(student.getSubjectsAvailabilityJson());
+
+        return tutorRepo.findAll().stream()
+                .filter(tutor -> {
+                    List<TutorProfileDTO.SubjectAvailabilityDTO> tutorSubjects =
+                            parseJson(tutor.getSubjectsAvailabilityJson());
+                    return tutorSubjects.stream().anyMatch(ts ->
+                            studentSubjects.stream().anyMatch(ss ->
+                                    ss.getSubject().equalsIgnoreCase(ts.getSubject()) &&
+                                    ss.getAvailability().equalsIgnoreCase(ts.getAvailability())
+                            )
+                    );
+                })
+                .map(this::mapTutorToDTO)
+                .collect(Collectors.toList());
+    }
+
+    private List parseJson(String json) {
+        if (json == null || json.isBlank()) return Collections.emptyList();
+        try {
+            return objectMapper.readValue(json, new TypeReference<List>() {});
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Collections.emptyList();
+        }
+    }
+
+    private TutorProfileDTO mapTutorToDTO(TutorProfile tutor) {
+        List<TutorProfileDTO.SubjectAvailabilityDTO> subjects = parseJson(tutor.getSubjectsAvailabilityJson());
+        return new TutorProfileDTO(
+                tutor.getId(),
+                tutor.getName(),
+                tutor.getEmail(),
+                tutor.getPhone(),
+                tutor.getRole(),
+                subjects,
+                tutor.getExperience(),
+                tutor.getBio(),
+                tutor.getHourlyRate(),
+                tutor.getLocation()
+        );
+    }
+    
+    @Autowired
+    private StudentTutorMappingRepository mappingRepository;
+
+    public StudentTutorMappingDTO mapStudentToTutor(Long studentId, Long tutorId, String subject, String availability) {
+        StudentTutorMapping mapping = new StudentTutorMapping();
+        mapping.setStudentId(studentId);
+        mapping.setTutorId(tutorId);
+        mapping.setSubject(subject);
+        mapping.setAvailability(availability);
+
+        mapping = mappingRepository.save(mapping);
+
+        StudentTutorMappingDTO dto = new StudentTutorMappingDTO();
+        dto.setId(mapping.getId());
+        dto.setStudentId(studentId);
+        dto.setTutorId(tutorId);
+        dto.setSubject(subject);
+        dto.setAvailability(availability);
+
+        return dto;
+    }
+
+
+       
+        }

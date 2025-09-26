@@ -1,0 +1,7 @@
+package com.tutorfinder.repository;
+
+import com.tutorfinder.model.Assignment;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface AssignmentRepository extends JpaRepository<Assignment, Long> {
+}

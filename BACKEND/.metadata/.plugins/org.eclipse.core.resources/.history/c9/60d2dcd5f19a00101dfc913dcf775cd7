@@ -1,0 +1,74 @@
+package com.tutorfinder.dto;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tutorfinder.model.StudentProfile;
+
+import java.util.Collections;
+import java.util.List;
+
+public class StudentProfileDTO {
+    private Long id;
+    private String name;
+    private String email;
+    private String phone;
+    private String location;
+    private String bio;
+    private List<SubjectAvailabilityDTO> subjectsAvailability;
+
+    private static final ObjectMapper mapper = new ObjectMapper();
+
+    public StudentProfileDTO() {}
+
+    // ✅ Constructor from entity (parses JSON safely)
+    public StudentProfileDTO(StudentProfile student) {
+        this.id = student.getId();
+        this.name = student.getName();
+        this.email = student.getEmail();
+        this.phone = student.getPhone();
+        this.location = student.getLocation();
+        this.bio = student.getBio();
+
+        try {
+            this.subjectsAvailability = student.getSubjectsAvailabilityJson() != null
+                    ? mapper.readValue(student.getSubjectsAvailabilityJson(),
+                        new TypeReference<List<SubjectAvailabilityDTO>>() {})
+                    : Collections.emptyList();
+        } catch (Exception e) {
+            this.subjectsAvailability = Collections.emptyList();
+        }
+    }
+
+    public StudentProfileDTO(Long id, String name, String email, String phone,
+                             String location, String bio, List<SubjectAvailabilityDTO> subjectsAvailability) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.phone = phone;
+        this.location = location;
+        this.bio = bio;
+        this.subjectsAvailability = subjectsAvailability;
+    }
+
+    // --- Getters & Setters ---
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
+
+    public String getPhone() { return phone; }
+    public void setPhone(String phone) { this.phone = phone; }
+
+    public String getLocation() { return location; }
+    public void setLocation(String location) { this.location = location; }
+
+    public String getBio() { return bio; }
+    public void setBio(String bio) { this.bio = bio; }
+
+    public List<SubjectAvailabilityDTO> getSubjectsAvailability() { return subjectsAvailability; }
+    public void setSubjectsAvailability(List<SubjectAvailabilityDTO> subjectsAvailability) { this.subjectsAvailability = subjectsAvailability; }
+}

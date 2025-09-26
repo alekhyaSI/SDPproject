@@ -1,0 +1,64 @@
+package com.tutorfinder.dto;
+
+import com.tutorfinder.model.TutorProfile;
+import java.util.List;
+import java.util.stream.Collectors;
+
+public class TutorProfileDTO {
+    private Long id;
+    private String name;
+    private String email;
+    private String phone;
+    private String location;
+    private String bio;
+    private List<SubjectAvailabilityDTO> subjectsAvailability;
+
+    public TutorProfileDTO() {}
+
+    // ✅ Constructor from entity
+    public TutorProfileDTO(TutorProfile tutor) {
+        this.id = tutor.getId();
+        this.name = tutor.getName();
+        this.email = tutor.getEmail();
+        this.phone = tutor.getPhone();
+        this.location = tutor.getLocation();
+        this.bio = tutor.getBio();
+        this.subjectsAvailability = tutor.getSubjectsAvailability()
+                .stream()
+                .map(SubjectAvailabilityDTO::new)
+                .collect(Collectors.toList());
+    }
+
+    public TutorProfileDTO(Long id, String name, String email, String phone,
+                           String location, String bio, List<SubjectAvailabilityDTO> subjectsAvailability) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.phone = phone;
+        this.location = location;
+        this.bio = bio;
+        this.subjectsAvailability = subjectsAvailability;
+    }
+
+    // --- Getters & Setters ---
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
+
+    public String getPhone() { return phone; }
+    public void setPhone(String phone) { this.phone = phone; }
+
+    public String getLocation() { return location; }
+    public void setLocation(String location) { this.location = location; }
+
+    public String getBio() { return bio; }
+    public void setBio(String bio) { this.bio = bio; }
+
+    public List<SubjectAvailabilityDTO> getSubjectsAvailability() { return subjectsAvailability; }
+    public void setSubjectsAvailability(List<SubjectAvailabilityDTO> subjectsAvailability) { this.subjectsAvailability = subjectsAvailability; }
+}

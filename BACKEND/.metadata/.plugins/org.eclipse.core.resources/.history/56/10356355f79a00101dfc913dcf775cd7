@@ -1,0 +1,63 @@
+package com.tutorfinder.service;
+
+import com.tutorfinder.dto.StudentTutorMappingDTO;
+import com.tutorfinder.model.StudentProfile;
+import com.tutorfinder.model.TutorProfile;
+import com.tutorfinder.model.StudentTutorMapping;
+import com.tutorfinder.repository.StudentProfileRepository;
+import com.tutorfinder.repository.TutorProfileRepository;
+import com.tutorfinder.repository.StudentTutorMappingRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Service
+public class AdminMappingService {
+
+    @Autowired
+    private StudentProfileRepository studentProfileRepository;
+
+    @Autowired
+    private TutorProfileRepository tutorProfileRepository;
+
+    @Autowired
+    private StudentTutorMappingRepository mappingRepository;
+
+    public StudentTutorMappingDTO mapStudentToTutor(Long studentId, Long tutorId, String subject, String availability) {
+        StudentProfile student = studentProfileRepository.findById(studentId)
+                .orElseThrow(() -> new RuntimeException("Student not found"));
+
+        TutorProfile tutor = tutorProfileRepository.findById(tutorId)
+                .orElseThrow(() -> new RuntimeException("Tutor not found"));
+
+        // --- Check matching ---
+        if (!student.getSubjects().contains(subject) || !student.getAvailability().contains(availability)) {
+            throw new RuntimeException("Student not available for this subject/time");
+        }
+
+        if (!tutor.getSubjects().contains(subject) || !tutor.getAvailability().contains(availability)) {
+            throw new RuntimeException("Tutor not available for this subject/time");
+        }
+
+        StudentTutorMapping mapping = new StudentTutorMapping();
+        mapping.setStudent(student);
+        mapping.setTutor(tutor);
+        mapping.setSubject(subject);
+        mapping.setAvailability(availability);
+
+        mapping = mappingRepository.save(mapping);
+        return new StudentTutorMappingDTO(mapping);
+    }
+
+    public List<StudentTutorMappingDTO> getAllMappings() {
+        return mappingRepository.findAll().stream()
+                .map(StudentTutorMappingDTO::new)
+                .collect(Collectors.toList());
+    }
+
+    public void deleteMapping(Long mappingId) {
+        mappingRepository.deleteById(mappingId);
+    }
+}

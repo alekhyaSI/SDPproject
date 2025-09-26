@@ -1,0 +1,32 @@
+package com.tutorfinder.service;
+
+import com.tutorfinder.model.StudentProfile;
+import com.tutorfinder.repository.StudentProfileRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+public class StudentProfileService {
+
+    @Autowired
+    private StudentProfileRepository studentProfileRepository;
+
+    public List<StudentProfile> getAllStudents() {
+        return studentProfileRepository.findAll();
+    }
+
+    public StudentProfile getStudentById(Long id) {
+        return studentProfileRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Student not found with id: " + id));
+    }
+
+    public StudentProfile saveStudent(StudentProfile studentProfile) {
+        return studentProfileRepository.save(studentProfile);
+    }
+
+    public void deleteStudent(Long id) {
+        studentProfileRepository.deleteById(id);
+    }
+}

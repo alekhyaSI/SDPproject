@@ -1,0 +1,5 @@
+package com.tutorfinder.repository;
+
+public interface StudentTutorMappingRepository {
+
+}

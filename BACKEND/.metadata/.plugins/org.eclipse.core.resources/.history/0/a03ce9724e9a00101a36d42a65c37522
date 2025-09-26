@@ -1,0 +1,57 @@
+package com.tutorfinder.service;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tutorfinder.dto.SubjectAvailabilityDTO;
+import com.tutorfinder.dto.TutorProfileDTO;
+import com.tutorfinder.model.TutorProfile;
+import com.tutorfinder.model.User;
+import com.tutorfinder.repository.TutorProfileRepository;
+import com.tutorfinder.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+public class TutorProfileService {
+
+    @Autowired
+    private TutorProfileRepository tutorProfileRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    private ObjectMapper mapper = new ObjectMapper();
+
+    
+
+    public TutorProfileDTO getProfileWithUserInfo(Long userId) {
+        TutorProfile profile = tutorProfileRepository.findByUserId(userId).orElse(null);
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        List<SubjectAvailabilityDTO> subjectsAvailability = null;
+        try {
+            if (profile != null && profile.getSubjectsAvailabilityJson() != null) {
+                subjectsAvailability = mapper.readValue(profile.getSubjectsAvailabilityJson(),
+                        new TypeReference<List<SubjectAvailabilityDTO>>() {});
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Error parsing subjects availability JSON", e);
+        }
+
+        return new TutorProfileDTO(
+                profile != null ? profile.getId() : null,
+                user.getName(),
+                user.getEmail(),
+                profile != null ? profile.getPhone() : null,
+                profile != null ? profile.getRole() : null,
+                subjectsAvailability,
+                profile != null ? profile.getExperience() : null,
+                profile != null ? profile.getBio() : null,
+                profile != null ? profile.getHourlyRate() : null,
+                profile != null ? profile.getLocation() : null
+        );
+    }
+}

@@ -1,0 +1,46 @@
+package com.tutorfinder.controller;
+
+import com.tutorfinder.model.StudentProfile;
+import com.tutorfinder.service.StudentProfileService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/students")
+@CrossOrigin("*") // allow all origins (adjust for production)
+public class StudentProfileController {
+
+    @Autowired
+    private StudentProfileService studentProfileService;
+
+    // GET all students
+    @GetMapping
+    public ResponseEntity<List<StudentProfile>> getAllStudents() {
+        List<StudentProfile> students = studentProfileService.getAllStudents();
+        return ResponseEntity.ok(students);
+    }
+
+    // GET student by ID
+    @GetMapping("/{id}")
+    public ResponseEntity<StudentProfile> getStudentById(@PathVariable Long id) {
+        StudentProfile student = studentProfileService.getStudentById(id);
+        return ResponseEntity.ok(student);
+    }
+
+    // POST new student
+    @PostMapping
+    public ResponseEntity<StudentProfile> createStudent(@RequestBody StudentProfile studentProfile) {
+        StudentProfile saved = studentProfileService.saveStudent(studentProfile);
+        return ResponseEntity.ok(saved);
+    }
+
+    // DELETE student
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteStudent(@PathVariable Long id) {
+        studentProfileService.deleteStudent(id);
+        return ResponseEntity.ok("Student deleted successfully");
+    }
+}

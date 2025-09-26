@@ -1,0 +1,17 @@
+package com.tutorfinder.dto;
+
+public class SubjectAvailabilityDTO {
+    private String subject;
+    private String availability;
+
+    public SubjectAvailabilityDTO() {}
+    public SubjectAvailabilityDTO(String subject, String availability) {
+        this.subject = subject;
+        this.availability = availability;
+    }
+
+    public String getSubject() { return subject; }
+    public void setSubject(String subject) { this.subject = subject; }
+    public String getAvailability() { return availability; }
+    public void setAvailability(String availability) { this.availability = availability; }
+}

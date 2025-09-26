@@ -1,0 +1,74 @@
+package com.tutorfinder.model;
+
+import com.tutorfinder.dto.SubjectAvailabilityDTO;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.persistence.*;
+
+import java.util.List;
+
+@Entity
+@Table(name = "student_profiles") // use correct table
+public class StudentProfile {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String bio;
+    private String email;
+    private String name;
+    private String phone;
+    private String location;
+
+    @Column(name = "subjects_availability_json", columnDefinition = "json")
+    private String subjectsAvailabilityJson; // store JSON of subjects + availability
+
+    @Column(name = "user_id")
+    private Long userId;
+
+    // --- Getters & Setters ---
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+
+    public String getBio() { return bio; }
+    public void setBio(String bio) { this.bio = bio; }
+
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
+
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+
+    public String getPhone() { return phone; }
+    public void setPhone(String phone) { this.phone = phone; }
+
+    public String getLocation() { return location; }
+    public void setLocation(String location) { this.location = location; }
+
+    public String getSubjectsAvailabilityJson() { return subjectsAvailabilityJson; }
+    public void setSubjectsAvailabilityJson(String subjectsAvailabilityJson) { this.subjectsAvailabilityJson = subjectsAvailabilityJson; }
+
+    public Long getUserId() { return userId; }
+    public void setUserId(Long userId) { this.userId = userId; }
+
+    // Helper to parse JSON
+    public List<SubjectAvailabilityDTO> getSubjectsAvailability() {
+        if (subjectsAvailabilityJson == null || subjectsAvailabilityJson.isEmpty()) return List.of();
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            return mapper.readValue(subjectsAvailabilityJson, new TypeReference<List<SubjectAvailabilityDTO>>() {});
+        } catch (Exception e) {
+            throw new RuntimeException("Error parsing subjectsAvailabilityJson", e);
+        }
+    }
+
+    public void setSubjectsAvailability(List<SubjectAvailabilityDTO> list) {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            this.subjectsAvailabilityJson = mapper.writeValueAsString(list);
+        } catch (Exception e) {
+            throw new RuntimeException("Error converting subjectsAvailability to JSON", e);
+        }
+    }
+}

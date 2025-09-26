@@ -1,0 +1,96 @@
+package com.tutorfinder.dto;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tutorfinder.model.StudentProfile;
+
+import java.util.List;
+
+public class StudentProfileDTO {
+    private String name;
+    private String email;
+    private String phone;
+    private String location;
+    private String bio;
+    private List<SubjectAvailabilityDTO> subjectsAvailability;
+
+    public StudentProfileDTO() {}
+
+    // NEW constructor
+    public StudentProfileDTO(StudentProfile student) {
+        this.name = student.getName();
+        this.email = student.getEmail();
+        this.phone = student.getPhone();
+        this.location = student.getLocation();
+        this.bio = student.getBio();
+
+        // Convert JSON string to List<SubjectAvailabilityDTO>
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            this.subjectsAvailability = mapper.readValue(
+                student.getSubjectsAvailabilityJson(),
+                new TypeReference<List<SubjectAvailabilityDTO>>() {}
+            );
+        } catch (Exception e) {
+            this.subjectsAvailability = List.of();
+        }
+    }
+
+    // Getters & Setters
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
+
+    public String getPhone() { return phone; }
+    public void setPhone(String phone) { this.phone = phone; }
+
+    public String getLocation() { return location; }
+    public void setLocation(String location) { this.location = location; }
+
+    public String getBio() { return bio; }
+    public void setBio(String bio) { this.bio = bio; }
+
+    public List<SubjectAvailabilityDTO> getSubjectsAvailability() { return subjectsAvailability; }
+    public void setSubjectsAvailability(List<SubjectAvailabilityDTO> subjectsAvailability) {
+        this.subjectsAvailability = subjectsAvailability;
+    }
+
+    public static class SubjectAvailabilityDTO {
+        private String subject;
+        private String availability;
+
+        public String getSubject() { return subject; }
+        public void setSubject(String subject) { this.subject = subject; }
+
+        public String getAvailability() { return availability; }
+        public void setAvailability(String availability) { this.availability = availability; }
+    }
+    
+    public List<StudentProfileDTO> getAllProfiles() {
+        return repository.findAll().stream() // use the injected instance
+                .map(profile -> {
+                    StudentProfileDTO dto = new StudentProfileDTO();
+                    dto.setName(profile.getName());
+                    dto.setEmail(profile.getEmail());
+                    dto.setPhone(profile.getPhone());
+                    dto.setLocation(profile.getLocation());
+                    dto.setBio(profile.getBio());
+
+                    try {
+                        List<SubjectAvailabilityDTO> subjects = profile.getSubjectsAvailabilityJson() != null
+                                ? objectMapper.readValue(profile.getSubjectsAvailabilityJson(),
+                                    new com.fasterxml.jackson.core.type.TypeReference<List<SubjectAvailabilityDTO>>() {})
+                                : List.of();
+                        dto.setSubjectsAvailability(subjects);
+                    } catch (Exception e) {
+                        dto.setSubjectsAvailability(List.of());
+                    }
+
+                    return dto;
+                })
+                .collect(Collectors.toList());
+    }
+
+}

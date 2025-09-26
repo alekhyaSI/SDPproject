@@ -1,0 +1,44 @@
+package com.tutorfinder.service;
+
+import com.tutorfinder.dto.StudentProfileDTO;
+import com.tutorfinder.model.StudentProfile;
+import com.tutorfinder.model.User;
+import com.tutorfinder.repository.StudentProfileRepository;
+import com.tutorfinder.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+@Service
+public class StudentProfileService {
+
+    @Autowired
+    private StudentProfileRepository studentProfileRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    public StudentProfile saveOrUpdateProfile(Long userId, StudentProfileDTO profileDTO) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        StudentProfile profile = studentProfileRepository.findByUserId(userId).orElse(new StudentProfile());
+
+        profile.setUser(user);
+        profile.setLocation(profileDTO.getLocation());
+        profile.setBio(profileDTO.getBio());
+        profile.setSubjects(profileDTO.getSubjects());
+        profile.setAvailability(profileDTO.getAvailability());
+
+        return studentProfileRepository.save(profile);
+    }
+
+    public StudentProfileDTO getProfileWithUserInfo(Long userId) {
+        StudentProfile profile = studentProfileRepository.findByUserId(userId)
+                .orElseThrow(() -> new RuntimeException("Profile not found"));
+        return new StudentProfileDTO(profile);
+    }
+
+    public void deleteProfile(Long userId) {
+        studentProfileRepository.deleteByUserId(userId);
+    }
+}

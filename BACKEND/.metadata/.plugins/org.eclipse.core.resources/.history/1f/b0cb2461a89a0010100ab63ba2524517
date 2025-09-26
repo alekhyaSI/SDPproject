@@ -1,0 +1,45 @@
+package com.tutorfinder.controller;
+
+import com.tutorfinder.dto.StudentProfileDTO;
+import com.tutorfinder.dto.TutorProfileDTO;
+import com.tutorfinder.service.AdminService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Map;
+
+@RestController
+@RequestMapping("/admin")
+@CrossOrigin("*")
+public class AdminController {
+
+    @Autowired
+    private AdminService adminService;
+
+    @GetMapping("/students")
+    public List<StudentProfileDTO> getAllStudents() {
+        return adminService.getAllStudents();
+    }
+
+    @GetMapping("/tutors")
+    public List<TutorProfileDTO> getAllTutors() {
+        return adminService.getAllTutors();
+    }
+
+    @PostMapping("/assign")
+    public ResponseEntity<String> assignTutor(@RequestBody Map<String, Long> body) {
+        Long studentId = body.get("studentId");
+        Long tutorId = body.get("tutorId");
+        adminService.assignTutorToStudent(studentId, tutorId);
+        return ResponseEntity.ok("Assigned successfully");
+    }
+    
+    @GetMapping("/students/{id}/matching-tutors")
+    public ResponseEntity<List<TutorProfileDTO>> getMatchingTutors(@PathVariable Long id) {
+        List<TutorProfileDTO> matches = adminService.getMatchingTutors(id);
+        return ResponseEntity.ok(matches);
+    }
+
+}

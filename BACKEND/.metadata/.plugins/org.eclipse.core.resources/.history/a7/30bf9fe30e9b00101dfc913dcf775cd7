@@ -1,0 +1,28 @@
+package com.tutorfinder.model;
+
+import jakarta.persistence.*;
+import java.util.List;
+
+@Entity
+@Table(name = "students")
+public class Student {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String name;
+    private String email;
+    private String phone;
+    private String location;
+    private String bio;
+
+    @Column(columnDefinition = "json")
+    private String subjectsAvailabilityJson; // store as JSON string
+
+    @Transient
+    private List<SubjectAvailability> subjectsAvailability;
+
+    // Getters & Setters
+    // ...
+}

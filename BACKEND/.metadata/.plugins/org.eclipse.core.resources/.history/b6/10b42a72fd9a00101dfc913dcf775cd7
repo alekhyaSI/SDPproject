@@ -1,0 +1,44 @@
+package com.tutorfinder.model;
+
+import jakarta.persistence.*;
+import java.util.List;
+
+@Entity
+public class StudentProfile {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String location;
+    private String bio;
+
+    @ElementCollection
+    private List<String> subjects;   // e.g., ["Math", "Science"]
+
+    @ElementCollection
+    private List<String> availability; // e.g., ["Mon 10-12", "Wed 4-6"]
+
+    @OneToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
+    // --- Getters & Setters ---
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+
+    public String getLocation() { return location; }
+    public void setLocation(String location) { this.location = location; }
+
+    public String getBio() { return bio; }
+    public void setBio(String bio) { this.bio = bio; }
+
+    public List<String> getSubjects() { return subjects; }
+    public void setSubjects(List<String> subjects) { this.subjects = subjects; }
+
+    public List<String> getAvailability() { return availability; }
+    public void setAvailability(List<String> availability) { this.availability = availability; }
+
+    public User getUser() { return user; }
+    public void setUser(User user) { this.user = user; }
+}

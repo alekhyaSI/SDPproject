@@ -1,0 +1,27 @@
+package com.tutorfinder.dto;
+
+import com.tutorfinder.model.SubjectAvailability;
+
+public class SubjectAvailabilityDTO {
+    private String subject;
+    private String availability;
+
+    public SubjectAvailabilityDTO() {}
+
+    // ✅ Constructor from entity
+    public SubjectAvailabilityDTO(SubjectAvailability sa) {
+        this.subject = sa.getSubject();
+        this.availability = sa.getAvailability();
+    }
+
+    public SubjectAvailabilityDTO(String subject, String availability) {
+        this.subject = subject;
+        this.availability = availability;
+    }
+
+    public String getSubject() { return subject; }
+    public void setSubject(String subject) { this.subject = subject; }
+
+    public String getAvailability() { return availability; }
+    public void setAvailability(String availability) { this.availability = availability; }
+}

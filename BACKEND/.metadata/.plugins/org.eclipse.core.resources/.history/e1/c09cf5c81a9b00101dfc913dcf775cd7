@@ -1,0 +1,14 @@
+package com.tutorfinder.controller;
+
+import com.tutorfinder.dto.StudentTutorMappingDTO;
+import com.tutorfinder.model.TutorProfile;
+import com.tutorfinder.service.AdminMappingService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/admin/mappings")
+@CrossOrigin("*")

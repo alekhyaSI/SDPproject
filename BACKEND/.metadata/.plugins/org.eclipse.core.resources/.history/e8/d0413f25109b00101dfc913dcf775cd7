@@ -1,0 +1,63 @@
+package com.tutorfinder.service;
+
+import com.tutorfinder.dto.StudentProfileDTO;
+import com.tutorfinder.model.StudentProfile;
+import com.tutorfinder.model.SubjectAvailability;
+import com.tutorfinder.repository.StudentProfileRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Service
+public class StudentProfileService {
+
+    @Autowired
+    private StudentProfileRepository repository;
+
+    public void saveOrUpdateProfile(Long userId, StudentProfileDTO dto) {
+        StudentProfile profile = repository.findByUserId(userId).orElse(new StudentProfile());
+        profile.setUserId(userId);
+        profile.setName(dto.getName());
+        profile.setEmail(dto.getEmail());
+        profile.setPhone(dto.getPhone());
+        profile.setLocation(dto.getLocation());
+        profile.setBio(dto.getBio());
+
+        List<SubjectAvailability> subjects = dto.getSubjectsAvailability().stream()
+                .map(s -> new SubjectAvailability(s.getSubject(), s.getAvailability()))
+                .collect(Collectors.toList());
+
+        profile.setSubjectsAvailability(subjects);
+
+        repository.save(profile);
+    }
+
+    public StudentProfileDTO getProfileWithUserInfo(Long userId) {
+        StudentProfile profile = repository.findByUserId(userId).orElse(new StudentProfile());
+        StudentProfileDTO dto = new StudentProfileDTO();
+        dto.setName(profile.getName());
+        dto.setEmail(profile.getEmail());
+        dto.setPhone(profile.getPhone());
+        dto.setLocation(profile.getLocation());
+        dto.setBio(profile.getBio());
+
+        List<StudentProfileDTO.SubjectAvailabilityDTO> subjects = profile.getSubjectsAvailability() != null
+                ? profile.getSubjectsAvailability().stream()
+                  .map(s -> {
+                      StudentProfileDTO.SubjectAvailabilityDTO sa = new StudentProfileDTO.SubjectAvailabilityDTO();
+                      sa.setSubject(s.getSubject());
+                      sa.setAvailability(s.getAvailability());
+                      return sa;
+                  }).collect(Collectors.toList())
+                : List.of();
+
+        dto.setSubjectsAvailability(subjects);
+        return dto;
+    }
+
+    public void deleteProfile(Long userId) {
+        repository.deleteByUserId(userId);
+    }
+}

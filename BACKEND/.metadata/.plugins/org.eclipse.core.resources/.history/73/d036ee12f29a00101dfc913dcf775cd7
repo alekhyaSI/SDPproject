@@ -1,0 +1,93 @@
+package com.tutorfinder.dto;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tutorfinder.model.TutorProfile;
+
+import java.util.Collections;
+import java.util.List;
+
+public class TutorProfileDTO {
+    private Long id;
+    private String name;
+    private String email;
+    private String phone;
+    private String role;
+    private String location;
+    private String bio;
+    private Integer experience;
+    private Integer hourlyRate;
+    private List<SubjectAvailabilityDTO> subjectsAvailability;
+
+    private static final ObjectMapper mapper = new ObjectMapper();
+
+    public TutorProfileDTO() {}
+
+    // ✅ Constructor from entity (parses JSON safely)
+    public TutorProfileDTO(TutorProfile tutor) {
+        this.id = tutor.getId();
+        this.name = tutor.getName();
+        this.email = tutor.getEmail();
+        this.phone = tutor.getPhone();
+        this.role = tutor.getRole();
+        this.location = tutor.getLocation();
+        this.bio = tutor.getBio();
+        this.experience = tutor.getExperience();
+        this.hourlyRate = tutor.getHourlyRate();
+
+        try {
+            this.subjectsAvailability = tutor.getSubjectsAvailabilityJson() != null
+                    ? mapper.readValue(tutor.getSubjectsAvailabilityJson(),
+                        new TypeReference<List<SubjectAvailabilityDTO>>() {})
+                    : Collections.emptyList();
+        } catch (Exception e) {
+            this.subjectsAvailability = Collections.emptyList();
+        }
+    }
+
+    public TutorProfileDTO(Long id, String name, String email, String phone, String role,
+                           List<SubjectAvailabilityDTO> subjectsAvailability,
+                           Integer experience, String bio, Double hourlyRate, String location) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.phone = phone;
+        this.role = role;
+        this.subjectsAvailability = subjectsAvailability;
+        this.experience = experience;
+        this.bio = bio;
+        this.hourlyRate = hourlyRate;
+        this.location = location;
+    }
+
+    // --- Getters & Setters ---
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
+
+    public String getPhone() { return phone; }
+    public void setPhone(String phone) { this.phone = phone; }
+
+    public String getRole() { return role; }
+    public void setRole(String role) { this.role = role; }
+
+    public String getLocation() { return location; }
+    public void setLocation(String location) { this.location = location; }
+
+    public String getBio() { return bio; }
+    public void setBio(String bio) { this.bio = bio; }
+
+    public Integer getExperience() { return experience; }
+    public void setExperience(Integer experience) { this.experience = experience; }
+
+    public Double getHourlyRate() { return hourlyRate; }
+    public void setHourlyRate(Double hourlyRate) { this.hourlyRate = hourlyRate; }
+
+    public List<SubjectAvailabilityDTO> getSubjectsAvailability() { return subjectsAvailability; }
+    public void setSubjectsAvailability(List<SubjectAvailabilityDTO> subjectsAvailability) { this.subjectsAvailability = subjectsAvailability; }
+}

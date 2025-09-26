@@ -1,0 +1,33 @@
+package com.tutorfinder.controller;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tutorfinder.dto.TutorProfileDTO;
+import com.tutorfinder.model.TutorProfile;
+import com.tutorfinder.service.TutorProfileService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/tutors/profile")
+@CrossOrigin("*")
+public class TutorProfileController {
+
+    @Autowired
+    private TutorProfileService tutorProfileService;
+
+    private ObjectMapper mapper = new ObjectMapper();
+
+    @PostMapping("/{userId}")
+    public ResponseEntity<TutorProfileDTO> saveOrUpdateProfile(
+            @PathVariable Long userId, @RequestBody TutorProfile profile) throws Exception {
+
+        TutorProfile updated = tutorProfileService.saveOrUpdateProfile(userId, profile);
+        return ResponseEntity.ok(tutorProfileService.getProfileWithUserInfo(userId));
+    }
+
+    @GetMapping("/{userId}")
+    public ResponseEntity<TutorProfileDTO> getProfile(@PathVariable Long userId) throws Exception {
+        return ResponseEntity.ok(tutorProfileService.getProfileWithUserInfo(userId));
+    }
+}

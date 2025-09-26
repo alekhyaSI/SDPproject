@@ -1,0 +1,51 @@
+package com.tutorfinder.controller;
+
+import com.tutorfinder.dto.StudentTutorMappingDTO;
+import com.tutorfinder.dto.TutorProfileDTO;
+import com.tutorfinder.service.AdminMappingService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/admin/mappings")
+@CrossOrigin("*")
+public class AdminMappingController {
+
+    @Autowired
+    private AdminMappingService adminMappingService;
+
+    // Assign student to tutor
+    @PostMapping("/assign")
+    public ResponseEntity<StudentTutorMappingDTO> assignStudentToTutor(
+            @RequestParam Long studentId,
+            @RequestParam Long tutorId,
+            @RequestParam String subject,
+            @RequestParam String availability) {
+
+        StudentTutorMappingDTO dto = adminMappingService.mapStudentToTutor(studentId, tutorId, subject, availability);
+        return ResponseEntity.ok(dto);
+    }
+
+    // Get all mappings
+    @GetMapping
+    public ResponseEntity<List<StudentTutorMappingDTO>> getAllMappings() {
+        return ResponseEntity.ok(adminMappingService.getAllMappings());
+    }
+
+    // Delete mapping
+    @DeleteMapping("/{mappingId}")
+    public ResponseEntity<String> deleteMapping(@PathVariable Long mappingId) {
+        adminMappingService.deleteMapping(mappingId);
+        return ResponseEntity.ok("Mapping deleted successfully");
+    }
+
+    // Get tutors matching student's availability
+    @GetMapping("/students/{studentId}/matching-tutors")
+    public ResponseEntity<List<TutorProfileDTO>> getMatchingTutors(@PathVariable Long studentId) {
+        List<TutorProfileDTO> tutors = adminMappingService.getMatchingTutorsForStudent(studentId);
+        return ResponseEntity.ok(tutors);
+    }
+}

@@ -1,0 +1,93 @@
+package com.tutorfinder.service;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tutorfinder.dto.StudentProfileDTO;
+import com.tutorfinder.dto.SubjectAvailabilityDTO;
+import com.tutorfinder.model.StudentProfile;
+import com.tutorfinder.model.User;
+import com.tutorfinder.repository.StudentProfileRepository;
+import com.tutorfinder.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+public class StudentProfileService {
+
+    @Autowired
+    private StudentProfileRepository studentProfileRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    private ObjectMapper mapper = new ObjectMapper();
+
+    public StudentProfile saveOrUpdateProfile(Long userId, StudentProfileDTO profileDTO) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        StudentProfile existingProfile = studentProfileRepository.findByUserId(userId).orElse(null);
+
+        try {
+            String subjectsJson = profileDTO.getSubjectsAvailability() != null ?
+                    mapper.writeValueAsString(profileDTO.getSubjectsAvailability()) : null;
+
+            if (existingProfile == null) {
+                StudentProfile profile = new StudentProfile();
+                profile.setUserId(userId);
+                profile.setName(user.getName());
+                profile.setEmail(user.getEmail());
+                profile.setPhone(user.getPhone());
+                profile.setLocation(profileDTO.getLocation());
+                profile.setBio(profileDTO.getBio());
+                profile.setSubjectsAvailabilityJson(subjectsJson);
+                return studentProfileRepository.save(profile);
+            } else {
+                existingProfile.setLocation(profileDTO.getLocation());
+                existingProfile.setBio(profileDTO.getBio());
+                existingProfile.setSubjectsAvailabilityJson(subjectsJson);
+                return studentProfileRepository.save(existingProfile);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Error processing subjects availability JSON", e);
+        }
+    }
+
+    public StudentProfileDTO getProfileWithUserInfo(Long userId) {
+        StudentProfile profile = studentProfileRepository.findByUserId(userId).orElse(null);
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        List<SubjectAvailabilityDTO> subjectsAvailability = null;
+        try {
+            if (profile != null && profile.getSubjectsAvailabilityJson() != null) {
+                subjectsAvailability = mapper.readValue(profile.getSubjectsAvailabilityJson(),
+                        new TypeReference<List<SubjectAvailabilityDTO>>() {});
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Error parsing subjects availability JSON", e);
+        }
+
+        return new StudentProfileDTO(
+                profile != null ? profile.getId() : null,
+                user.getName(),
+                user.getEmail(),
+                user.getPhone(),
+                profile != null ? profile.getLocation() : null,
+                profile != null ? profile.getBio() : null,
+                subjectsAvailability
+        );
+    }
+
+    public void deleteProfile(Long userId) {
+        studentProfileRepository.findByUserId(userId)
+                .ifPresent(studentProfileRepository::delete);
+    }
+    
+    public List<StudentProfile> getAllStudents() {
+        return studentProfileRepository.findAll();
+    }
+
+}

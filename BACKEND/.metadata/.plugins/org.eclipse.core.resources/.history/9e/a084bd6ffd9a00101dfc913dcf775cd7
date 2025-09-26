@@ -1,0 +1,54 @@
+package com.tutorfinder.dto;
+
+import com.tutorfinder.model.StudentProfile;
+import java.util.List;
+
+public class StudentProfileDTO {
+    private Long id;
+    private String name;
+    private String email;
+    private String phone;
+    private String location;
+    private String bio;
+    private List<String> subjects;
+    private List<String> availability;
+
+    public StudentProfileDTO() {}
+
+    // Constructor from entity
+    public StudentProfileDTO(StudentProfile student) {
+        this.id = student.getId();
+        this.name = student.getUser().getName();
+        this.email = student.getUser().getEmail();
+        this.phone = student.getUser().getPhone();
+        this.location = student.getLocation();
+        this.bio = student.getBio();
+        this.subjects = student.getSubjects();
+        this.availability = student.getAvailability();
+    }
+
+    // --- Getters & Setters ---
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
+
+    public String getPhone() { return phone; }
+    public void setPhone(String phone) { this.phone = phone; }
+
+    public String getLocation() { return location; }
+    public void setLocation(String location) { this.location = location; }
+
+    public String getBio() { return bio; }
+    public void setBio(String bio) { this.bio = bio; }
+
+    public List<String> getSubjects() { return subjects; }
+    public void setSubjects(List<String> subjects) { this.subjects = subjects; }
+
+    public List<String> getAvailability() { return availability; }
+    public void setAvailability(List<String> availability) { this.availability = availability; }
+}

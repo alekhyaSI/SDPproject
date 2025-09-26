@@ -1,0 +1,115 @@
+package com.tutorfinder.dto;
+
+import java.util.List;
+
+public class TutorProfileDTO {
+    private Long id;
+    private String name;
+    private String email;
+    private String phone;
+    private String role;
+    private List<SubjectAvailabilityDTO> subjectsAvailability;
+    private Integer experience;
+    private String bio;
+    private Integer hourlyRate;
+    private String location;
+
+    public TutorProfileDTO() {}
+
+    public TutorProfileDTO(Long id, String name, String email, String phone, String role,
+                           List<SubjectAvailabilityDTO> subjectsAvailability,
+                           Integer experience, String bio, Integer hourlyRate, String location) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.phone = phone;
+        this.role = role;
+        this.subjectsAvailability = subjectsAvailability;
+        this.experience = experience;
+        this.bio = bio;
+        this.hourlyRate = hourlyRate;
+        this.location = location;
+    }
+
+    // --- Getters ---
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public List<SubjectAvailabilityDTO> getSubjectsAvailability() {
+        return subjectsAvailability;
+    }
+
+    public Integer getExperience() {
+        return experience;
+    }
+
+    public String getBio() {
+        return bio;
+    }
+
+    public Integer getHourlyRate() {
+        return hourlyRate;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    // --- Setters ---
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
+    public void setSubjectsAvailability(List<SubjectAvailabilityDTO> subjectsAvailability) {
+        this.subjectsAvailability = subjectsAvailability;
+    }
+
+    public void setExperience(Integer experience) {
+        this.experience = experience;
+    }
+
+    public void setBio(String bio) {
+        this.bio = bio;
+    }
+
+    public void setHourlyRate(Integer hourlyRate) {
+        this.hourlyRate = hourlyRate;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+}

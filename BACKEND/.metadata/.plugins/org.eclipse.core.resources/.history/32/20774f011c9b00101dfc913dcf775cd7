@@ -1,0 +1,89 @@
+package com.tutorfinder.controller;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tutorfinder.dto.StudentProfileDTO;
+import com.tutorfinder.dto.TutorProfileDTO;
+import com.tutorfinder.model.StudentProfile;
+import com.tutorfinder.model.TutorProfile;
+import com.tutorfinder.repository.StudentProfileRepository;
+import com.tutorfinder.repository.TutorProfileRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@RestController
+@RequestMapping("/admin/mappings")
+@CrossOrigin("*")
+public class AdminMappingController {
+
+    @Autowired
+    private StudentProfileRepository studentRepo;
+
+    @Autowired
+    private TutorProfileRepository tutorRepo;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    // ✅ Get matching tutors for a given student
+    @GetMapping("/students/{studentId}/matching-tutors")
+    public List<TutorProfileDTO> getMatchingTutors(@PathVariable Long studentId) throws Exception {
+        StudentProfile student = studentRepo.findByUserId(studentId)
+                .orElseThrow(() -> new RuntimeException("Student not found"));
+
+        List<StudentProfileDTO.SubjectAvailabilityDTO> studentSubjects =
+                objectMapper.readValue(student.getSubjectsAvailabilityJson(),
+                        new TypeReference<List<StudentProfileDTO.SubjectAvailabilityDTO>>() {});
+
+        List<TutorProfileDTO> matchedTutors = new ArrayList<>();
+
+        for (TutorProfile tutor : tutorRepo.findAll()) {
+            List<TutorProfileDTO.SubjectAvailabilityDTO> tutorSubjects =
+                    objectMapper.readValue(tutor.getSubjectsAvailabilityJson(),
+                            new TypeReference<List<TutorProfileDTO.SubjectAvailabilityDTO>>() {});
+
+            // ✅ Check overlap
+            boolean hasOverlap = studentSubjects.stream().anyMatch(s ->
+                    tutorSubjects.stream().anyMatch(t ->
+                            s.getSubject().equalsIgnoreCase(t.getSubject()) &&
+                                    s.getAvailability().equalsIgnoreCase(t.getAvailability())
+                    )
+            );
+
+            if (hasOverlap) {
+                TutorProfileDTO dto = new TutorProfileDTO(
+                        tutor.getUserId(),
+                        tutor.getName(),
+                        tutor.getEmail(),
+                        tutor.getPhone(),
+                        tutor.getRole(),
+                        tutorSubjects,
+                        tutor.getExperience(),
+                        tutor.getBio(),
+                        tutor.getHourlyRate(),
+                        tutor.getLocation()
+                );
+                matchedTutors.add(dto);
+            }
+        }
+
+        return matchedTutors;
+    }
+    
+    @PostMapping("/assign")
+    public ResponseEntity<StudentTutorMappingDTO> assignStudentToTutor(
+            @RequestParam Long studentId,
+            @RequestParam Long tutorId,
+            @RequestParam String subject,
+            @RequestParam String availability) {
+
+        return ResponseEntity.ok(
+            adminMappingService.mapStudentToTutor(studentId, tutorId, subject, availability)
+        );
+    
+    
+}

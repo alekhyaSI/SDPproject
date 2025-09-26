@@ -18,14 +18,24 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    // ✅ Register
+    // Register
     @PostMapping("/register")
-    public ResponseEntity<User> register(@RequestBody User user) {
+    public ResponseEntity<?> register(@RequestBody User user) {
+        // Only enforce admin code if role is admin
+        if ("admin".equalsIgnoreCase(user.getRole())) {
+            // Assume adminCode is sent in the User object
+            if (user.getAdminCode() == null || !user.getAdminCode().equals("426")) {
+                return ResponseEntity
+                        .badRequest()
+                        .body("Invalid admin code. Admin registration denied.");
+            }
+        }
+
         User registeredUser = userService.registerUser(user);
         return ResponseEntity.ok(registeredUser);
     }
 
-    // ✅ Login
+    // Login
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody User loginRequest) {
         User user = userService.loginUser(loginRequest.getEmail(), loginRequest.getPassword());
@@ -36,14 +46,14 @@ public class UserController {
         }
     }
 
-    // ✅ Update user
+    //  Update user
     @PutMapping("/update/{id}")
     public ResponseEntity<User> updateUser(@PathVariable("id") Long id,
                                            @RequestBody User updatedUser) {
         return ResponseEntity.ok(userService.updateUser(id, updatedUser));
     }
 
-    // ✅ Delete user
+    // Delete user
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> deleteUser(@PathVariable("id") Long id) {
         userService.deleteUser(id);
@@ -61,7 +71,7 @@ public class UserController {
     }
 
 
-    // ✅ Test endpoint
+    // Test endpoint
     @GetMapping("/")
     public String hello() {
         return "Spring Boot is running";

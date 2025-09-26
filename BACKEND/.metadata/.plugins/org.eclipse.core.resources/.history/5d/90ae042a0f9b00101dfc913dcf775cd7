@@ -1,0 +1,28 @@
+package com.tutorfinder.dto;
+
+import com.tutorfinder.model.StudentProfile;
+
+public class StudentProfileDTO {
+    private Long id;
+    private String name;
+    private String subjectsAvailabilityJson;
+
+    public StudentProfileDTO() {}
+
+    public StudentProfileDTO(StudentProfile profile) {
+        this.id = profile.getId();
+        this.name = profile.getName();
+        this.subjectsAvailabilityJson = profile.getSubjectsAvailabilityJson();
+    }
+
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+
+    public String getSubjectsAvailabilityJson() { return subjectsAvailabilityJson; }
+    public void setSubjectsAvailabilityJson(String subjectsAvailabilityJson) {
+        this.subjectsAvailabilityJson = subjectsAvailabilityJson;
+    }
+}

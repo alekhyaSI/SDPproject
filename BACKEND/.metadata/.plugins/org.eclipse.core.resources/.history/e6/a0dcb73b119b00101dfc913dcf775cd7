@@ -1,0 +1,43 @@
+package com.tutorfinder.controller;
+
+import com.tutorfinder.dto.TutorProfileDTO;
+import com.tutorfinder.model.TutorProfile;
+import com.tutorfinder.service.TutorProfileService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/tutors")
+@CrossOrigin("*")
+public class TutorProfileController {
+
+    @Autowired
+    private TutorProfileService service;
+
+    @PostMapping("/{userId}")
+    public ResponseEntity<TutorProfileDTO> saveOrUpdateTutor(
+            @PathVariable Long userId,
+            @RequestBody TutorProfileDTO dto) throws Exception {
+        service.saveOrUpdateTutor(userId, dto);
+        return ResponseEntity.ok(service.getTutorWithSubjects(userId));
+    }
+
+    @GetMapping("/{userId}")
+    public ResponseEntity<TutorProfileDTO> getTutor(@PathVariable Long userId) throws Exception {
+        return ResponseEntity.ok(service.getTutorWithSubjects(userId));
+    }
+
+    @DeleteMapping("/{userId}")
+    public ResponseEntity<String> deleteTutor(@PathVariable Long userId) {
+        service.deleteTutor(userId);
+        return ResponseEntity.ok("Tutor deleted successfully");
+    }
+
+    @GetMapping
+    public ResponseEntity<List<TutorProfile>> getAllTutors() {
+        return ResponseEntity.ok(service.getAllTutors());
+    }
+}

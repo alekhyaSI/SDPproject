@@ -1,0 +1,30 @@
+package com.tutorfinder.model;
+
+import jakarta.persistence.*;
+import java.util.List;
+
+@Entity
+@Table(name = "tutor_profiles")
+public class TutorProfile {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private Long userId;
+    private String name;
+    private String email;
+    private String phone;
+    private String role;
+    private Integer experience;
+    private String bio;
+    private Integer hourlyRate;
+    private String location;
+
+    @ElementCollection
+    @CollectionTable(name = "tutor_subjects", joinColumns = @JoinColumn(name = "tutor_id"))
+    private List<SubjectAvailability> subjectsAvailability;
+
+    // Getters & Setters
+    // ... generate for all fields
+}

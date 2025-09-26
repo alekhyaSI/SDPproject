@@ -1,0 +1,38 @@
+package com.tutorfinder.controller;
+
+import com.tutorfinder.dto.TutorProfileDTO;
+import com.tutorfinder.service.TutorProfileService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/tutors/profile")
+@CrossOrigin("*")
+public class TutorProfileController {
+
+    @Autowired
+    private TutorProfileService tutorService;
+
+    // Save or update tutor profile
+    @PostMapping("/{userId}")
+    public ResponseEntity<TutorProfileDTO> saveOrUpdateProfile(
+            @PathVariable Long userId,
+            @RequestBody TutorProfileDTO profileDTO) {
+        tutorService.saveOrUpdateProfile(userId, profileDTO);
+        return ResponseEntity.ok(tutorService.getProfileWithUserInfo(userId));
+    }
+
+    // Get tutor profile
+    @GetMapping("/{userId}")
+    public ResponseEntity<TutorProfileDTO> getProfile(@PathVariable Long userId) {
+        return ResponseEntity.ok(tutorService.getProfileWithUserInfo(userId));
+    }
+
+    // Delete tutor profile
+    @DeleteMapping("/{userId}")
+    public ResponseEntity<String> deleteProfile(@PathVariable Long userId) {
+        tutorService.deleteProfile(userId);
+        return ResponseEntity.ok("Tutor profile deleted successfully");
+    }
+}

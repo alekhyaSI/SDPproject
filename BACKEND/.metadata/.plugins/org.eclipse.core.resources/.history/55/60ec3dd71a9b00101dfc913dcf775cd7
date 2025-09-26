@@ -1,0 +1,37 @@
+package com.tutorfinder.controller;
+
+import com.tutorfinder.dto.StudentTutorMappingDTO;
+import com.tutorfinder.model.TutorProfile;
+import com.tutorfinder.service.AdminMappingService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/admin/mappings")
+@CrossOrigin("*")
+public class AdminMappingController {
+
+    private final StudentProfileRepository studentRepo;
+    private final AdminMappingService mappingService;
+
+    public AdminMappingController(StudentProfileRepository studentRepo,
+                                  AdminMappingService mappingService) {
+        this.studentRepo = studentRepo;
+        this.mappingService = mappingService;
+    }
+
+    @GetMapping("/students")
+    public List<StudentProfileDTO> getAllStudents() {
+        return studentRepo.findAll().stream()
+                .map(StudentProfileDTO::new)
+                .collect(Collectors.toList());
+    }
+
+    @GetMapping("/students/{studentId}/matching-tutors")
+    public List<TutorProfileDTO> getMatchingTutors(@PathVariable Long studentId) {
+        return mappingService.getMatchingTutorsForStudent(studentId);
+    }
+}

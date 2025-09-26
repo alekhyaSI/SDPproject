@@ -1,0 +1,94 @@
+package com.tutorfinder.service;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tutorfinder.dto.TutorProfileDTO;
+import com.tutorfinder.model.TutorProfile;
+import com.tutorfinder.model.User;
+import com.tutorfinder.repository.TutorProfileRepository;
+import com.tutorfinder.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+public class TutorProfileService {
+
+    @Autowired
+    private TutorProfileRepository tutorProfileRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    private ObjectMapper mapper = new ObjectMapper();
+
+    public TutorProfile saveOrUpdateProfile(Long userId, TutorProfileDTO profileDTO) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        TutorProfile existingProfile = tutorProfileRepository.findByUserId(userId).orElse(null);
+
+        try {
+            String subjectsJson = profileDTO.getSubjectsAvailability() != null ?
+                    mapper.writeValueAsString(profileDTO.getSubjectsAvailability()) : null;
+
+            if (existingProfile == null) {
+                TutorProfile profile = new TutorProfile();
+                profile.setUserId(userId);
+                profile.setName(profileDTO.getName() != null ? profileDTO.getName() : user.getName());
+                profile.setEmail(profileDTO.getEmail() != null ? profileDTO.getEmail() : user.getEmail());
+                profile.setPhone(profileDTO.getPhone());
+                profile.setRole(profileDTO.getRole());
+                profile.setSubjectsAvailabilityJson(subjectsJson);
+                profile.setBio(profileDTO.getBio());
+                profile.setExperience(profileDTO.getExperience());
+                profile.setHourlyRate(profileDTO.getHourlyRate());
+                profile.setLocation(profileDTO.getLocation());
+                return tutorProfileRepository.save(profile);
+            } else {
+                existingProfile.setSubjectsAvailabilityJson(subjectsJson);
+                existingProfile.setExperience(profileDTO.getExperience());
+                existingProfile.setBio(profileDTO.getBio());
+                existingProfile.setHourlyRate(profileDTO.getHourlyRate());
+                existingProfile.setLocation(profileDTO.getLocation());
+                existingProfile.setName(profileDTO.getName() != null ? profileDTO.getName() : user.getName());
+                existingProfile.setEmail(profileDTO.getEmail() != null ? profileDTO.getEmail() : user.getEmail());
+                existingProfile.setPhone(profileDTO.getPhone());
+                existingProfile.setRole(profileDTO.getRole());
+                return tutorProfileRepository.save(existingProfile);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Error processing subjects availability JSON", e);
+        }
+    }
+
+    public TutorProfileDTO getProfileWithUserInfo(Long userId) {
+        TutorProfile profile = tutorProfileRepository.findByUserId(userId).orElse(null);
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        List<TutorProfileDTO.SubjectAvailabilityDTO> subjectsAvailability = null;
+        try {
+            if (profile != null && profile.getSubjectsAvailabilityJson() != null) {
+                subjectsAvailability = mapper.readValue(profile.getSubjectsAvailabilityJson(),
+                        new TypeReference<List<TutorProfileDTO.SubjectAvailabilityDTO>>() {});
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Error parsing subjects availability JSON", e);
+        }
+
+        return new TutorProfileDTO(
+                profile != null ? profile.getId() : null,
+                user.getName(),
+                user.getEmail(),
+                profile != null ? profile.getPhone() : null,
+                profile != null ? profile.getRole() : null,
+                subjectsAvailability,
+                profile != null ? profile.getExperience() : null,
+                profile != null ? profile.getBio() : null,
+                profile != null ? profile.getHourlyRate() : null,
+                profile != null ? profile.getLocation() : null
+        );
+    }
+}

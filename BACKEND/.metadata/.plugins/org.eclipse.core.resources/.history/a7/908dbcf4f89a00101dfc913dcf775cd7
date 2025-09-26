@@ -1,0 +1,39 @@
+package com.tutorfinder.controller;
+
+import com.tutorfinder.dto.StudentTutorMappingDTO;
+import com.tutorfinder.service.AdminMappingService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/admin/mappings")
+@CrossOrigin("*")
+public class AdminMappingController {
+
+    @Autowired
+    private AdminMappingService adminMappingService;
+
+    @PostMapping("/assign")
+    public ResponseEntity<StudentTutorMappingDTO> assignStudentToTutor(
+            @RequestParam Long studentId,
+            @RequestParam Long tutorId,
+            @RequestParam String subject,
+            @RequestParam String availability) {
+
+        return ResponseEntity.ok(adminMappingService.mapStudentToTutor(studentId, tutorId, subject, availability));
+    }
+
+    @GetMapping
+    public ResponseEntity<List<StudentTutorMappingDTO>> getAllMappings() {
+        return ResponseEntity.ok(adminMappingService.getAllMappings());
+    }
+
+    @DeleteMapping("/{mappingId}")
+    public ResponseEntity<String> deleteMapping(@PathVariable Long mappingId) {
+        adminMappingService.deleteMapping(mappingId);
+        return ResponseEntity.ok("Mapping deleted successfully");
+    }
+}

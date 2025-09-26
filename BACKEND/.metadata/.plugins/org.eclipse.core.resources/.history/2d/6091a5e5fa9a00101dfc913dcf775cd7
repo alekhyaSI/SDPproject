@@ -1,0 +1,94 @@
+package com.tutorfinder.service;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tutorfinder.dto.StudentProfileDTO;
+import com.tutorfinder.dto.StudentTutorMappingDTO;
+import com.tutorfinder.dto.SubjectAvailabilityDTO;
+import com.tutorfinder.dto.TutorProfileDTO;
+import com.tutorfinder.model.StudentProfile;
+import com.tutorfinder.model.StudentTutorMapping;
+import com.tutorfinder.model.TutorProfile;
+import com.tutorfinder.repository.StudentProfileRepository;
+import com.tutorfinder.repository.StudentTutorMappingRepository;
+import com.tutorfinder.repository.TutorProfileRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+public class AdminMappingService {
+
+    @Autowired
+    private StudentProfileRepository studentRepo;
+
+    @Autowired
+    private TutorProfileRepository tutorRepo;
+
+    @Autowired
+    private StudentTutorMappingRepository mappingRepo;
+
+    private ObjectMapper mapper = new ObjectMapper();
+
+    private List<SubjectAvailabilityDTO> parseSubjects(String json) {
+        if (json == null || json.isEmpty()) return List.of();
+        try {
+            return mapper.readValue(json, new TypeReference<List<SubjectAvailabilityDTO>>() {});
+        } catch (Exception e) {
+            throw new RuntimeException("Error parsing subjects JSON", e);
+        }
+    }
+
+    // Map a student to a tutor for a specific subject+availability
+    public StudentTutorMappingDTO mapStudentToTutor(Long studentId, Long tutorId, String subject, String availability) {
+        StudentProfile student = studentRepo.findById(studentId)
+                .orElseThrow(() -> new RuntimeException("Student not found"));
+        TutorProfile tutor = tutorRepo.findById(tutorId)
+                .orElseThrow(() -> new RuntimeException("Tutor not found"));
+
+        StudentTutorMapping mapping = new StudentTutorMapping();
+        mapping.setStudent(student);
+        mapping.setTutor(tutor);
+        mapping.setSubject(subject);
+        mapping.setAvailability(availability);
+
+        mappingRepo.save(mapping);
+
+        return new StudentTutorMappingDTO(mapping);
+    }
+
+    public List<StudentTutorMappingDTO> getAllMappings() {
+        return mappingRepo.findAll().stream()
+                .map(StudentTutorMappingDTO::new)
+                .toList();
+    }
+
+    public void deleteMapping(Long mappingId) {
+        mappingRepo.deleteById(mappingId);
+    }
+
+    // Get matching tutors automatically based on subjects & availability
+    public List<TutorProfileDTO> getMatchingTutorsForStudent(Long studentId) {
+        // Fetch student entity
+        StudentProfile studentEntity = studentRepo.findById(studentId)
+                .orElseThrow(() -> new RuntimeException("Student not found"));
+
+        // Convert to DTO
+        StudentProfileDTO studentDTO = new StudentProfileDTO(studentEntity);
+
+        return tutorRepo.findAll().stream()
+                .filter(tutor -> parseSubjects(tutor.getSubjectsAvailabilityJson()).stream()
+                        .anyMatch(ts -> {
+                            for (int i = 0; i < studentDTO.getSubjects().size(); i++) {
+                                if (ts.getSubject().equalsIgnoreCase(studentDTO.getSubjects().get(i))
+                                        && ts.getAvailability().replaceAll("\\s", "")
+                                        .equalsIgnoreCase(studentDTO.getAvailability().get(i).replaceAll("\\s", ""))) {
+                                    return true;
+                                }
+                            }
+                            return false;
+                        }))
+                .map(TutorProfileDTO::new)
+                .toList();
+    }
