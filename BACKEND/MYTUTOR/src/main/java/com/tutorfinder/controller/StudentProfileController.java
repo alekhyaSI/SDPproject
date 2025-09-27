@@ -37,6 +37,7 @@ public class StudentProfileController {
     }
     
  // NEW: Fetch all student profiles
+ //all students.
     @GetMapping("/all")
     public ResponseEntity<List<StudentProfileDTO>> getAllProfiles() {
         return ResponseEntity.ok(service.getAllProfiles());
