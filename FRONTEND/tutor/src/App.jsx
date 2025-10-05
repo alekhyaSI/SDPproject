@@ -4,7 +4,7 @@ import Register from "./components/Register";
 import Login from "./components/Login";
 import StudentDashBoard from "./components/StudentDashBoard";
 import TutorDashBoard from "./components/TutorDashBoard";
-import AdminDashBoard from "./components/AdminDashboard";
+import AdminDashBoard from "./components/AdminDashBoard";
 import HomePage from "./components/HomePage";
 import Navbar from "./components/Nav";
 
