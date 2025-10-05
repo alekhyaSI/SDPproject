@@ -11,7 +11,6 @@ services:
       - mysql_data:/var/lib/mysql
     networks:
       - springboot-mysql-net
-
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
       interval: 10s
@@ -31,7 +30,9 @@ services:
       - springboot-mysql-net
 
   frontend:
-    image: alekhyasi/mytutorfrontend:latest
+    build:
+      context: ./FRONTEND/tutor
+      dockerfile: frontend.Dockerfile
     container_name: react
     ports:
       - "3000:80"
