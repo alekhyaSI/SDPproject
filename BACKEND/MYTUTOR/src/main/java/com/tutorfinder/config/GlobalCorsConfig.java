@@ -8,11 +8,10 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class GlobalCorsConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-    	registry.addMapping("/**")  // <-- allow all paths
-        .allowedOrigins("http://localhost:5173")
-        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-        .allowCredentials(true)
-        .maxAge(3600);
-
+        registry.addMapping("/**")  // allow all paths
+            .allowedOrigins("http://localhost:3000") // update here
+            .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+            .allowCredentials(true)
+            .maxAge(3600);
     }
 }
