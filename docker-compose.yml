@@ -19,7 +19,9 @@ services:
       start_period: 30s
 
   backend:
-    image: alekhyasi/mytutorbackend:latest
+    build:
+      context: ./BACKEND/MYTUTOR
+      dockerfile: backend.Dockerfile
     container_name: springboot
     ports:
       - "2026:2025"
