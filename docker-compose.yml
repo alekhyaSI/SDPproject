@@ -24,7 +24,7 @@ services:
       dockerfile: backend.Dockerfile
     container_name: springboot
     ports:
-      - "2026:2025"
+      - "2025:2025"
     depends_on:
       - mysqlpro
     restart: on-failure
