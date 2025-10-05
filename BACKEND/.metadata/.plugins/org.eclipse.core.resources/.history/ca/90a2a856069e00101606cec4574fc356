@@ -1,0 +1,50 @@
+package com.tutorfinder.service;
+
+import com.tutorfinder.model.Booking;
+import com.tutorfinder.repository.BookingRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import java.util.List;
+
+@Service
+public class BookingService {
+
+    @Autowired
+    private BookingRepository bookingRepository;
+
+    // Create a new booking
+    public Booking createBooking(Booking booking) {
+        if (booking.getStatus() == null) booking.setStatus("pending");
+        return bookingRepository.save(booking);
+    }
+
+    // Get all bookings
+    public List<Booking> getAllBookings() {
+        return bookingRepository.findAll();
+    }
+
+    // Get bookings by tutor
+    public List<Booking> getTutorBookings(Long tutorId) {
+        return bookingRepository.findByTutorId(tutorId);
+    }
+
+    // Get bookings by student
+    public List<Booking> getStudentBookings(Long studentId) {
+        return bookingRepository.findByStudentId(studentId);
+    }
+
+    // Update booking status
+    public Booking updateBookingStatus(Long bookingId, String status) {
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new RuntimeException("Booking not found"));
+        booking.setStatus(status);
+        return bookingRepository.save(booking);
+    }
+
+    // Optional: Delete booking
+    public void deleteBooking(Long bookingId) {
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new RuntimeException("Booking not found"));
+        bookingRepository.delete(booking);
+    }
+}

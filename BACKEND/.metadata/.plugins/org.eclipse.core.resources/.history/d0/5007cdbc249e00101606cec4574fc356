@@ -1,0 +1,33 @@
+package com.tutorfinder.model;
+
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "bookings")
+public class Booking {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String status;
+
+    @Column(name = "student_id")
+    private Long studentId;
+
+    @Column(name = "tutor_id")
+    private Long tutorId;  // Stores the **user_id** of the tutor
+
+    // getters and setters
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
+
+    public Long getStudentId() { return studentId; }
+    public void setStudentId(Long studentId) { this.studentId = studentId; }
+
+    public Long getTutorId() { return tutorId; }
+    public void setTutorId(Long tutorId) { this.tutorId = tutorId; }
+}

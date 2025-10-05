@@ -22,6 +22,9 @@ public class User {
     @Column(nullable = false)
     private String role;           // student / tutor / admin
 
+    // NEW: whether admin approved this user (tutor/student)
+    private Boolean approved = false;
+
     public User() {}
 
     public User(String adminCode, String email, String name, String password, String phone, String qualification, String role) {
@@ -32,6 +35,7 @@ public class User {
         this.phone = phone;
         this.qualification = qualification;
         this.role = role;
+        this.approved = false;
     }
 
     // Getters and Setters
@@ -58,4 +62,7 @@ public class User {
 
     public String getRole() { return role; }
     public void setRole(String role) { this.role = role; }
+
+    public Boolean getApproved() { return approved; }
+    public void setApproved(Boolean approved) { this.approved = approved; }
 }

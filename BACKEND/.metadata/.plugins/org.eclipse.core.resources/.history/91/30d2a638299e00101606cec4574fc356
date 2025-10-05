@@ -1,0 +1,150 @@
+package com.tutorfinder.controller;
+
+import com.tutorfinder.dto.BookingResponseDTO;
+import com.tutorfinder.model.Booking;
+import com.tutorfinder.model.TutorProfile;
+import com.tutorfinder.model.User;
+import com.tutorfinder.repository.BookingRepository;
+import com.tutorfinder.repository.TutorProfileRepository;
+import com.tutorfinder.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+@RestController
+@RequestMapping("/bookings")
+@CrossOrigin("*")
+public class BookingController {
+
+    @Autowired
+    private BookingRepository bookingRepository;
+
+    @Autowired
+    private TutorProfileRepository tutorProfileRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    // Convert Booking -> BookingResponseDTO
+    private BookingResponseDTO convertToDTO(Booking booking) {
+        User student = userRepository.findById(booking.getStudentId())
+                .orElseThrow(() -> new RuntimeException("Student not found"));
+
+        User tutorUser = userRepository.findById(booking.getTutorId())
+                .orElseThrow(() -> new RuntimeException("Tutor not found"));
+
+        // Optional: fetch tutor profile for more info
+        TutorProfile tutorProfile = tutorProfileRepository.findByUserId(booking.getTutorId())
+                .orElse(null);
+
+        String tutorName = tutorProfile != null ? tutorProfile.getName() : tutorUser.getName();
+
+        return new BookingResponseDTO(
+                booking.getId(),
+                student.getId(),
+                student.getName(),
+                student.getEmail(),
+                student.getPhone(),
+                tutorUser.getId(),
+                tutorName,
+                booking.getStatus(),
+                booking.getSubject(),
+                booking.getTimeSlot()
+        );
+    }
+
+    // Create a booking
+    @PostMapping("/book")
+    public BookingResponseDTO createBooking(@RequestBody Booking booking) {
+        if (booking.getStatus() == null) booking.setStatus("pending");
+
+        // Validate subject & timeSlot
+        if (booking.getSubject() == null || booking.getSubject().isEmpty()) {
+            throw new RuntimeException("Subject must be provided");
+        }
+        if (booking.getTimeSlot() == null || booking.getTimeSlot().isEmpty()) {
+            throw new RuntimeException("Time slot must be provided");
+        }
+
+        // Validate student
+        userRepository.findById(booking.getStudentId())
+                .orElseThrow(() -> new RuntimeException("Student not found"));
+
+        // Validate tutor exists and is a tutor
+        User tutorUser = userRepository.findById(booking.getTutorId())
+                .orElseThrow(() -> new RuntimeException("Tutor not found"));
+
+        if (!"tutor".equals(tutorUser.getRole())) {
+            throw new RuntimeException("Selected user is not a tutor");
+        }
+
+        Booking savedBooking = bookingRepository.save(booking);
+        return convertToDTO(savedBooking);
+    }
+
+    // Get all bookings
+    @GetMapping
+    public List<BookingResponseDTO> getAllBookings() {
+        return bookingRepository.findAll()
+                .stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    // Get bookings by tutor
+    @GetMapping("/tutor/{tutorId}")
+    public List<BookingResponseDTO> getTutorBookings(@PathVariable("tutorId") Long tutorId) {
+        return bookingRepository.findByTutorId(tutorId)
+                .stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    // Get bookings by student
+    @GetMapping("/student/{studentId}")
+    public List<BookingResponseDTO> getStudentBookings(@PathVariable("studentId") Long studentId) {
+        return bookingRepository.findByStudentId(studentId)
+                .stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    // Update booking status
+    @PutMapping("/{bookingId}")
+    public BookingResponseDTO updateBookingStatus(
+            @PathVariable("bookingId") Long bookingId,
+            @RequestBody Booking requestBody
+    ) {
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new RuntimeException("Booking not found"));
+
+        if (requestBody.getStatus() != null) {
+            booking.setStatus(requestBody.getStatus());
+        }
+
+        Booking updated = bookingRepository.save(booking);
+        return convertToDTO(updated);
+    }
+
+    // Delete booking
+    @DeleteMapping("/{bookingId}")
+    public String deleteBooking(@PathVariable("bookingId") Long bookingId) {
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new RuntimeException("Booking not found"));
+
+        bookingRepository.delete(booking);
+        return "Booking deleted successfully";
+    }
+    
+    @GetMapping("/tutor/{tutorId}/accepted")
+    public List<BookingResponseDTO> getTutorAcceptedBookings(@PathVariable Long tutorId) {
+        return bookingRepository.findByTutorId(tutorId)
+                .stream()
+                .filter(b -> "accepted".equalsIgnoreCase(b.getStatus()))
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+}

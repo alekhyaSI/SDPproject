@@ -1,3 +1,4 @@
+// src/components/Login.jsx
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -7,47 +8,52 @@ const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
 const Login = () => {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-  });
+  const [formData, setFormData] = useState({ email: "", password: "" });
 
-  // Handle input changes
-  const handleChange = (e) => {
+  const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
 
-  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    try {
-      const response = await axios.post(`${API_BASE_URL}/user/login`, formData);
-      const user = response.data;
+    if (!formData.email || !formData.password) {
+      alert("Please fill in all fields!");
+      return;
+    }
 
-      if (!user.id) {
-        alert("Login failed: No user ID returned from backend!");
-        console.error("Invalid login response:", user);
+    try {
+      const res = await axios.post(`${API_BASE_URL}/api/user/login`, formData, {
+        withCredentials: true,
+      });
+
+      const message = res.data.message;
+      const user = res.data.data;
+
+      // Handle pending approval
+      if (message.includes("pending admin approval")) {
+        alert("Your account is pending admin approval. Please wait.");
         return;
       }
 
-      // Save user in localStorage
+      if (!user || !user.id) {
+        alert("Login failed: invalid response from server");
+        return;
+      }
+
       localStorage.setItem("user", JSON.stringify(user));
-      alert("Login successful!");
-      console.log("Logged in user:", user);
 
       // Redirect based on role
-      if (user.role === "student") navigate("/student-dashboard");
+      if (user.role === "admin") navigate("/admin-dashboard");
       else if (user.role === "tutor") navigate("/tutor-dashboard");
-      else if (user.role === "admin") navigate("/admin-dashboard");
-      else navigate("/"); // fallback
+      else if (user.role === "student") navigate("/student-dashboard");
+      else navigate("/");
 
     } catch (err) {
-      console.error("Login failed:", err);
-      if (err.response && err.response.data) {
-        alert(`Login failed: ${err.response.data}`);
+      console.error("Login error", err);
+      if (err.response?.data?.message) {
+        alert(`Login failed: ${err.response.data.message}`);
       } else {
-        alert("Invalid email or password!");
+        alert("Login failed! Check backend server.");
       }
     }
   };

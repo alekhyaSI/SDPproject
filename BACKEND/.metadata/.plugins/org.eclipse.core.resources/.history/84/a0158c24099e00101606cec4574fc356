@@ -1,0 +1,100 @@
+package com.tutorfinder.controller;
+
+import com.tutorfinder.dto.BookingResponseDTO;
+import com.tutorfinder.model.Booking;
+import com.tutorfinder.model.TutorProfile;
+import com.tutorfinder.model.User;
+import com.tutorfinder.repository.TutorProfileRepository;
+import com.tutorfinder.repository.UserRepository;
+import com.tutorfinder.service.BookingService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+@RestController
+@RequestMapping("/bookings")
+@CrossOrigin("*")
+public class BookingController {
+
+    @Autowired
+    private BookingService bookingService;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private TutorProfileRepository tutorProfileRepository;
+
+    private BookingResponseDTO convertToDTO(Booking booking) {
+        User student = userRepository.findById(booking.getStudentId())
+                .orElseThrow(() -> new RuntimeException("Student not found"));
+
+        TutorProfile tutorProfile = tutorProfileRepository.findByUserId(booking.getTutorId())
+                .orElseThrow(() -> new RuntimeException("Tutor profile not found"));
+
+        return new BookingResponseDTO(
+                booking.getId(),
+                student.getId(),
+                student.getName(),
+                student.getEmail(),
+                student.getPhone(),
+                tutorProfile.getUserId(),
+                tutorProfile.getName(),
+                booking.getStatus(),
+                booking.getSubject(),
+                booking.getTimeSlot()
+        );
+    }
+
+    // Student books a session
+    @PostMapping("/book")
+    public BookingResponseDTO createBooking(@RequestBody Booking booking) {
+        if (booking.getTimeSlot() == null || booking.getTimeSlot().isEmpty()) {
+            throw new RuntimeException("Time slot must be provided.");
+        }
+
+        if (booking.getSubject() == null || booking.getSubject().isEmpty()) {
+            throw new RuntimeException("Subject must be provided.");
+        }
+
+        // Check if same student already booked same tutor+time
+        boolean exists = bookingService.getStudentBookings(booking.getStudentId()).stream()
+                .anyMatch(b -> Objects.equals(b.getTutorId(), booking.getTutorId())
+                        && Objects.equals(b.getTimeSlot(), booking.getTimeSlot())
+                        && b.getSubject() != null
+                        && b.getSubject().equalsIgnoreCase(booking.getSubject()));
+
+        if (exists) {
+            throw new RuntimeException("You have already booked this tutor for the selected subject and time slot.");
+        }
+
+        if (booking.getStatus() == null) booking.setStatus("pending");
+        Booking savedBooking = bookingService.createBooking(booking);
+        return convertToDTO(savedBooking);
+    }
+
+    // Admin: get all bookings
+    @GetMapping
+    public List<BookingResponseDTO> getAllBookings() {
+        return bookingService.getAllBookings()
+                .stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    // Admin: update status (accept/decline)
+    @PutMapping("/{bookingId}")
+    public BookingResponseDTO updateBookingStatus(
+            @PathVariable("bookingId") Long bookingId,
+            @RequestBody Booking requestBody
+    ) {
+        if (requestBody.getStatus() == null || requestBody.getStatus().isEmpty()) {
+            throw new RuntimeException("Status must be provided.");
+        }
+        Booking updated = bookingService.updateBookingStatus(bookingId, requestBody.getStatus());
+        return convertToDTO(updated);
+    }
+}

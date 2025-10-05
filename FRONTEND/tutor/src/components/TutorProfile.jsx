@@ -1,86 +1,63 @@
+// src/components/TutorProfile.jsx
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 import "./TutorProfile.css";
+const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
 const TutorProfile = () => {
   const navigate = useNavigate();
   const [tutor, setTutor] = useState(null);
+  const [formData, setFormData] = useState({ name: "", email: "", phone: "", experience: "", bio: "", hourlyRate: "", location: "" });
   const [subjectsAvailability, setSubjectsAvailability] = useState([{ subject: "", availability: "" }]);
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    role: "",
-    experience: "",
-    bio: "",
-    hourlyRate: "",
-    location: ""
-  });
+  const [studentCount, setStudentCount] = useState(0);
 
   useEffect(() => {
-    const storedUser = JSON.parse(localStorage.getItem("user"));
-    if (!storedUser || !storedUser.id) {
-      alert("User not found. Please log in again.");
-      navigate("/");
-      return;
-    }
-    setTutor(storedUser);
+    const stored = JSON.parse(localStorage.getItem("user"));
+    if (!stored?.id) { navigate("/login"); return; }
+    setTutor(stored);
 
-    axios.get(`${API_BASE_URL}/tutors/profile/${storedUser.id}`)
-      .then((res) => {
-        const data = res.data;
+    // profile
+    axios.get(`${API_BASE_URL}/tutors/profile/${stored.id}`)
+      .then(res => {
+        const d = res.data || {};
         setFormData({
-          name: data.name || "",
-          email: data.email || "",
-          phone: data.phone || "",
-          role: data.role || "",
-          experience: data.experience || "",
-          bio: data.bio || "",
-          hourlyRate: data.hourlyRate || "",
-          location: data.location || ""
+          name: d.name || stored.name || "",
+          email: d.email || stored.email || "",
+          phone: d.phone || "",
+          experience: d.experience || "",
+          bio: d.bio || "",
+          hourlyRate: d.hourlyRate || "",
+          location: d.location || ""
         });
-        setSubjectsAvailability(
-          data.subjectsAvailability?.length > 0 ? data.subjectsAvailability : [{ subject: "", availability: "" }]
-        );
+        setSubjectsAvailability(d.subjectsAvailability?.length ? d.subjectsAvailability : [{ subject: "", availability: "" }]);
       })
-      .catch((err) => console.log("No profile yet", err));
+      .catch(() => { /* no profile yet */ });
+
+    // fetch accepted bookings for student count
+    axios.get(`${API_BASE_URL}/bookings/tutor/${stored.id}/accepted`)
+      .then(res => {
+        const bookings = res.data || [];
+        // count unique students
+        const uniqueStudents = new Set(bookings.map(b => b.studentId || b.student_id));
+        setStudentCount(uniqueStudents.size);
+      })
+      .catch(err => console.error("Failed to fetch students count", err));
   }, [navigate]);
 
   const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
-
-  const handleSubjectChange = (idx, field, value) => {
-    const newArr = [...subjectsAvailability];
-    newArr[idx][field] = value;
-    setSubjectsAvailability(newArr);
+  const handleSubjectChange = (idx, field, val) => {
+    const arr = [...subjectsAvailability]; arr[idx][field] = val; setSubjectsAvailability(arr);
   };
-
   const addSubject = () => setSubjectsAvailability([...subjectsAvailability, { subject: "", availability: "" }]);
   const removeSubject = (idx) => setSubjectsAvailability(subjectsAvailability.filter((_, i) => i !== idx));
 
   const handleSave = async () => {
     try {
-      const payload = { ...formData, subjectsAvailability };
-      await axios.post(`${API_BASE_URL}/tutors/profile/${tutor.id}`, payload);
-      alert("Profile saved successfully!");
-      navigate("/tutor-dashboard");
+      await axios.post(`${API_BASE_URL}/tutors/profile/${tutor.id}`, { ...formData, subjectsAvailability });
+      alert("Saved");
     } catch (err) {
-      console.error(err);
-      alert("Error saving profile");
-    }
-  };
-
-  const handleDelete = async () => {
-    if (!window.confirm("Are you sure you want to delete your profile?")) return;
-    try {
-      await axios.delete(`${API_BASE_URL}/tutors/${tutor.id}`); // Optional if you implement delete
-      alert("Profile deleted successfully!");
-      localStorage.removeItem("user");
-      navigate("/");
-    } catch (err) {
-      console.error(err);
-      alert("Error deleting profile");
+      console.error(err); alert("Save failed");
     }
   };
 
@@ -89,31 +66,32 @@ const TutorProfile = () => {
   return (
     <div className="profile-container">
       <h2>My Tutor Profile</h2>
+      <p><strong>Students who selected you:</strong> {studentCount}</p>
+
       <div className="profile-form">
-        {["name","email","phone","role","experience","bio","hourlyRate","location"].map(field => (
+        {["name","email","phone","experience","bio","hourlyRate","location"].map(field => (
           <label key={field}>
             {field.charAt(0).toUpperCase() + field.slice(1)}:
             {field === "bio" ? (
               <textarea name={field} value={formData[field]} onChange={handleChange} />
             ) : (
-              <input type={["experience","hourlyRate"].includes(field) ? "number" : "text"} name={field} value={formData[field]} onChange={handleChange} />
+              <input name={field} type={["experience","hourlyRate"].includes(field) ? "number" : "text"} value={formData[field]} onChange={handleChange} />
             )}
           </label>
         ))}
 
         <label>Subjects & Availability:</label>
-        {subjectsAvailability.map((item, idx) => (
-          <div key={idx} className="subject-entry">
-            <input type="text" placeholder="Subject" value={item.subject} onChange={e => handleSubjectChange(idx,"subject",e.target.value)} />
-            <input type="text" placeholder="Availability (e.g. Mon 10-12)" value={item.availability} onChange={e => handleSubjectChange(idx,"availability",e.target.value)} />
-            <button type="button" onClick={() => removeSubject(idx)}>Remove</button>
+        {subjectsAvailability.map((s, i) => (
+          <div key={i} className="subject-entry">
+            <input placeholder="Subject" value={s.subject} onChange={e => handleSubjectChange(i, "subject", e.target.value)} />
+            <input placeholder="Availability" value={s.availability} onChange={e => handleSubjectChange(i, "availability", e.target.value)} />
+            <button type="button" onClick={() => removeSubject(i)}>Remove</button>
           </div>
         ))}
         <button type="button" onClick={addSubject}>Add Subject</button>
 
         <div className="profile-actions">
-          <button type="button" onClick={handleSave}>Save / Update</button>
-          <button type="button" onClick={handleDelete} className="delete-btn">Delete Profile</button>
+          <button onClick={handleSave}>Save</button>
         </div>
       </div>
     </div>

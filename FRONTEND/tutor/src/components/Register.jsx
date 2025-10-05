@@ -3,7 +3,6 @@ import axios from "axios";
 import "./Register.css";
 import { useNavigate } from "react-router-dom";
 
-
 const Register = () => {
   const navigate = useNavigate();
 
@@ -34,24 +33,25 @@ const Register = () => {
       return;
     }
 
-    // Vite way of reading env variable
+    // Ensure VITE_BACKEND_URL = http://localhost:2025
     const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
     try {
       const response = await axios.post(
-        `${BASE_URL}/user/register`,
-        { ...formData, role }
+        `${BASE_URL}/api/user/register`, // <-- corrected endpoint
+        { ...formData, role },
+        { withCredentials: true }       // <-- ensures cookies sent if needed
       );
+
       alert("Registered successfully");
       console.log("Registered User: ", response.data);
-      // Redirect to login
-      navigate("/login");  // <--- this line
+      navigate("/login");
     } catch (err) {
       console.error("Error during registration:", err);
       if (err.response && err.response.data) {
-        alert(`Registration failed: ${err.response.data}`);
+        alert(`Registration failed: ${err.response.data.message || err.response.data}`);
       } else {
-        alert("Registration failed!");
+        alert("Registration failed! Check backend server.");
       }
     }
   };

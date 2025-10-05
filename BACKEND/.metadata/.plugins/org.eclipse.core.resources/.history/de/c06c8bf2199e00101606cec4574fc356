@@ -1,0 +1,20 @@
+private BookingResponseDTO convertToDTO(Booking booking) {
+    User student = userRepository.findById(booking.getStudentId())
+            .orElseThrow(() -> new RuntimeException("Student not found"));
+
+    TutorProfile tutorProfile = tutorProfileRepository.findByUserId(booking.getTutorId())
+            .orElseThrow(() -> new RuntimeException("Tutor profile not found"));
+
+    return new BookingResponseDTO(
+            booking.getId(),
+            student.getId(),
+            student.getName(),
+            student.getEmail(),
+            student.getPhone(),
+            tutorProfile.getUserId(),
+            tutorProfile.getName(),
+            booking.getStatus(),
+            booking.getSubject(),    // new
+            booking.getTimeSlot()    // new
+    );
+}

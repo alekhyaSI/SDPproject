@@ -1,0 +1,93 @@
+/* Container */
+.find-tutors-page {
+  font-family: Arial, sans-serif;
+  color: #333;
+  background: #fff;
+  padding: 60px 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Heading */
+.find-tutors-page h2 {
+  font-size: 36px;
+  font-weight: bold;
+  color: #111;
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+/* Filters section */
+.filters {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 15px;
+  margin-bottom: 40px;
+}
+.filters input {
+  padding: 12px 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: 0.2s;
+}
+.filters input:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+}
+
+/* Tutor list */
+.tutor-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 25px;
+}
+
+/* Tutor card */
+.tutor-card {
+  background: #f9fafb;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.tutor-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+}
+.tutor-card h3 {
+  font-size: 20px;
+  font-weight: bold;
+  color: #111;
+  margin-bottom: 5px;
+}
+.tutor-card p {
+  margin: 5px 0;
+  color: #555;
+  font-size: 14px;
+}
+.tutor-card strong {
+  color: #111;
+}
+
+/* Book button */
+.tutor-card button {
+  margin-top: 15px;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  border: none;
+  background: #2563eb;
+  color: #fff;
+  transition: 0.2s;
+}
+.tutor-card button:hover:enabled {
+  background: #1e4ed8;
+  transform: scale(1.05);
+}
+.tutor-card button:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+}

@@ -29,6 +29,12 @@ const TutorDashboard = () => {
           </div>
 
           <div className="card">
+            <h3>Tutors</h3>
+            <p>Find the tutors.</p>
+            <button onClick={() => navigate("/find-tutors")}>Find Tutors</button>
+          </div>
+
+          <div className="card">
             <h3>Manage Schedule</h3>
             <p>Set your available time slots for students.</p>
             <button onClick={() => navigate("/manage-schedule")}>Manage Schedule</button>
@@ -40,11 +46,6 @@ const TutorDashboard = () => {
             <button onClick={() => navigate("/my-students")}>View Students</button>
           </div>
 
-          <div className="card">
-            <h3>Earnings</h3>
-            <p>Track your total income from bookings.</p>
-            <button onClick={() => navigate("/earnings")}>View Earnings</button>
-          </div>
         </section>
       </div>
     </div>

@@ -1,80 +1,100 @@
 package com.tutorfinder.controller;
 
+import com.tutorfinder.dto.ApiResponse;
 import com.tutorfinder.model.User;
 import com.tutorfinder.service.UserService;
-
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-//final project
-//new final project
+import java.util.List;
+
 @RestController
-@RequestMapping("/user")
-@CrossOrigin("*") // allow frontend urls all
+@RequestMapping("/api/user")
+@CrossOrigin // Allow frontend to access backend
 public class UserController {
 
     @Autowired
     private UserService userService;
 
-    // Register
+    // Register user
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody User user) {
-        // Only enforce admin code if role is admin
-        if ("admin".equalsIgnoreCase(user.getRole())) {
-            // Assume adminCode is sent in the User object
-            if (user.getAdminCode() == null || !user.getAdminCode().equals("426")) {
-                return ResponseEntity
-                        .badRequest()
-                        .body("Invalid admin code. Admin registration denied.");
-            }
-        }
-
-        User registeredUser = userService.registerUser(user);
-        return ResponseEntity.ok(registeredUser);
+        // Admin auto-approved, others pending
+        user.setApproved(user.getRole() != null && user.getRole().equalsIgnoreCase("admin"));
+        userService.registerUser(user);
+        return ResponseEntity.ok(new ApiResponse<>("Registered successfully. Pending admin approval.", user));
     }
 
     // Login
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody User loginRequest) {
         User user = userService.loginUser(loginRequest.getEmail(), loginRequest.getPassword());
-        if (user != null) {
-            return ResponseEntity.ok(user);
-        } else {
-            return ResponseEntity.badRequest().body("Invalid email or password");
+        if (user == null) {
+            return ResponseEntity.badRequest().body(new ApiResponse<>("Invalid email or password"));
         }
+
+        // Check approval
+        if (user.getApproved() == null || Boolean.FALSE.equals(user.getApproved())) {
+            return ResponseEntity.ok(new ApiResponse<>("Account pending admin approval", user));
+        }
+
+        return ResponseEntity.ok(new ApiResponse<>("Login successful", user));
     }
 
-    //  Update user
+    // Update user
     @PutMapping("/update/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable("id") Long id,
-                                           @RequestBody User updatedUser) {
-        return ResponseEntity.ok(userService.updateUser(id, updatedUser));
+    public ResponseEntity<?> updateUser(@PathVariable("id") Long id,
+                                        @RequestBody User updatedUser) {
+        try {
+            User u = userService.updateUser(id, updatedUser);
+            return ResponseEntity.ok(new ApiResponse<>("User updated", u));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new ApiResponse<>(e.getMessage()));
+        }
     }
 
     // Delete user
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> deleteUser(@PathVariable("id") Long id) {
+    public ResponseEntity<?> deleteUser(@PathVariable("id") Long id) {
         userService.deleteUser(id);
-        return ResponseEntity.ok("User deleted successfully");
+        return ResponseEntity.ok(new ApiResponse<>("User deleted successfully"));
     }
-    
- // Get all students
+
+    // Get all students
     @GetMapping("/students")
-    public ResponseEntity<List<User>> getAllStudents() {
+    public ResponseEntity<?> getStudents(@RequestParam(required = false) Boolean pending) {
         List<User> students = userService.getAllUsers()
-                                         .stream()
-                                         .filter(u -> "student".equalsIgnoreCase(u.getRole()))
-                                         .toList();
-        return ResponseEntity.ok(students);
+            .stream()
+            .filter(u -> "student".equalsIgnoreCase(u.getRole()))
+            .filter(u -> pending == null || (pending && Boolean.FALSE.equals(u.getApproved())))
+            .toList();
+        return ResponseEntity.ok(new ApiResponse<>("Students fetched", students));
     }
 
+    // Get all tutors
+    @GetMapping("/tutors")
+    public ResponseEntity<?> getTutors(@RequestParam(required = false) Boolean pending) {
+        List<User> tutors = userService.getAllUsers()
+            .stream()
+            .filter(u -> "tutor".equalsIgnoreCase(u.getRole()))
+            .filter(u -> pending == null || (pending && Boolean.FALSE.equals(u.getApproved())))
+            .toList();
+        return ResponseEntity.ok(new ApiResponse<>("Tutors fetched", tutors));
+    }
 
-    // Test endpoint
     @GetMapping("/")
-    public String hello() {
-        return "Spring Boot is running";
+    public ResponseEntity<?> hello() {
+        return ResponseEntity.ok(new ApiResponse<>("API is running"));
+    }
+    @PostMapping("/admin/{action}/{type}/{id}")
+    public ResponseEntity<?> approveOrReject(
+            @PathVariable String action,
+            @PathVariable String type,
+            @PathVariable Long id
+    ) {
+        boolean approve = action.equalsIgnoreCase("approve");
+        userService.approveOrRejectUser(id, type, approve);
+        return ResponseEntity.ok(new ApiResponse<>(type + " " + (approve ? "approved" : "rejected")));
     }
 }

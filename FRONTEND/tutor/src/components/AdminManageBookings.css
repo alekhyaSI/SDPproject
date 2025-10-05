@@ -1,0 +1,89 @@
+.admin-bookings-page {
+  font-family: Arial, sans-serif;
+  padding: 20px;
+  background: #f5f7fa;
+  min-height: 100vh;
+  color: #333;
+}
+
+.admin-bookings-page h2 {
+  margin-bottom: 20px;
+  color: #1e2a38;
+}
+
+.bookings-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.bookings-table th,
+.bookings-table td {
+  padding: 12px 15px;
+  text-align: left;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.bookings-table th {
+  background-color: #1e2a38;
+  color: #fff;
+  font-weight: 600;
+}
+
+.bookings-table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.bookings-table tr:hover {
+  background-color: #f1f5f9;
+}
+
+.bookings-table button {
+  padding: 6px 12px;
+  margin-right: 5px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+}
+
+.bookings-table button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.bookings-table button:nth-child(1) {
+  background-color: #4caf50;
+  color: #fff;
+}
+
+.bookings-table button:nth-child(1):hover:not(:disabled) {
+  background-color: #45a049;
+}
+
+.bookings-table button:nth-child(2) {
+  background-color: #f44336;
+  color: #fff;
+}
+
+.bookings-table button:nth-child(2):hover:not(:disabled) {
+  background-color: #d32f2f;
+}
+
+@media (max-width: 768px) {
+  .bookings-table th,
+  .bookings-table td {
+    padding: 8px 10px;
+    font-size: 13px;
+  }
+
+  .bookings-table button {
+    padding: 4px 8px;
+    font-size: 12px;
+  }
+}

@@ -1,87 +1,62 @@
-/* ====== Container ====== */
-/*new code updated*/
-.admin-container {
+.dashboard-container {
   font-family: Arial, sans-serif;
-  min-height: 100vh;
-  background: #fff;
-  color: #333;
-  padding: 40px 20px;
 }
 
-/* ====== Heading ====== */
-.admin-container h1 {
-  text-align: center;
-  font-size: 36px;
-  margin-bottom: 40px;
-  color: #2563eb;
-}
-
-/* ====== Table ====== */
-.admin-table {
-  width: 100%;
-  border-collapse: collapse;
-  background: #f3f4f6;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-}
-
-.admin-table thead {
-  background: #2563eb;
+.top-nav {
+  background-color: #333;
   color: #fff;
+  padding: 15px 20px;
+  display: flex;
+  align-items: center;
 }
 
-.admin-table th,
-.admin-table td {
-  padding: 15px;
-  text-align: left;
-}
-
-.admin-table tbody tr {
-  border-bottom: 1px solid #e5e7eb;
-  transition: background 0.2s;
-}
-
-.admin-table tbody tr:hover {
-  background: #e0e7ff;
-}
-
-/* ====== Select ====== */
-.admin-table select {
-  padding: 8px 12px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  background: #fff;
-  color: #333;
-  cursor: pointer;
-  margin-right: 10px;
-}
-
-.admin-table select option {
-  background: #fff;
-  color: #333;
-}
-
-/* ====== Button ====== */
-.admin-table button {
-  padding: 8px 16px;
-  border-radius: 6px;
-  border: none;
-  background: #2563eb;
-  color: #fff;
+.top-nav .logo {
+  font-size: 20px;
   font-weight: bold;
-  cursor: pointer;
-  transition: 0.2s;
 }
 
-.admin-table button:hover {
-  background: #1e40af;
-  transform: scale(1.05);
+.main-content {
+  padding: 20px;
 }
 
-/* ====== Subjects / Availability ====== */
-.admin-table td div {
-  margin-bottom: 4px;
-  font-size: 14px;
+.hero-section h1 {
+  margin: 0 0 10px 0;
+}
+
+.hero-section p {
+  margin: 0 0 30px 0;
   color: #555;
+}
+
+.dashboard-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.card {
+  background: #fff;
+  flex: 1 1 220px;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+.card h3 {
+  margin-top: 0;
+}
+
+.card button {
+  margin-top: 10px;
+  padding: 5px 15px;
+  border: none;
+  border-radius: 5px;
+  background-color: #333;
+  color: #fff;
+  cursor: pointer;
+}
+
+.card button:hover {
+  background-color: #555;
 }

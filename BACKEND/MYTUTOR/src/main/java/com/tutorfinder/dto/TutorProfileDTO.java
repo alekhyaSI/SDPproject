@@ -3,7 +3,7 @@ package com.tutorfinder.dto;
 import java.util.List;
 
 public class TutorProfileDTO {
-    private Long id;
+    private Long id; // this will now represent users.id
     private String name;
     private String email;
     private String phone;
@@ -19,7 +19,7 @@ public class TutorProfileDTO {
     public TutorProfileDTO(Long id, String name, String email, String phone, String role,
                            List<SubjectAvailabilityDTO> subjectsAvailability,
                            Integer experience, String bio, Integer hourlyRate, String location) {
-        this.id = id;
+        this.id = id;  // ← make sure this is users.id
         this.name = name;
         this.email = email;
         this.phone = phone;

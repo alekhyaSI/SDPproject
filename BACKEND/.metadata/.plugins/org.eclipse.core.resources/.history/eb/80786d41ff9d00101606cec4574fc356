@@ -1,0 +1,5 @@
+package com.tutorfinder.dto;
+
+public class BookingResponseDTO {
+
+}

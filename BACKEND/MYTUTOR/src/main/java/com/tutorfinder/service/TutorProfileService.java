@@ -23,6 +23,7 @@ public class TutorProfileService {
 
     private ObjectMapper mapper = new ObjectMapper();
 
+    // Save or update a tutor profile
     public TutorProfile saveOrUpdateProfile(Long userId, TutorProfileDTO profileDTO) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -63,6 +64,7 @@ public class TutorProfileService {
         }
     }
 
+    // Get profile with user info
     public TutorProfileDTO getProfileWithUserInfo(Long userId) {
         TutorProfile profile = tutorProfileRepository.findByUserId(userId).orElse(null);
         User user = userRepository.findById(userId)
@@ -79,7 +81,7 @@ public class TutorProfileService {
         }
 
         return new TutorProfileDTO(
-                profile != null ? profile.getId() : null,
+                user.getId(),                       // ← FIXED: use users.id
                 user.getName(),
                 user.getEmail(),
                 profile != null ? profile.getPhone() : null,
@@ -90,5 +92,37 @@ public class TutorProfileService {
                 profile != null ? profile.getHourlyRate() : null,
                 profile != null ? profile.getLocation() : null
         );
+    }
+
+    // Get all tutor profiles
+    public List<TutorProfileDTO> getAllProfiles() {
+        List<TutorProfile> profiles = tutorProfileRepository.findAll();
+        return profiles.stream().map(profile -> {
+            User user = userRepository.findById(profile.getUserId())
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+
+            List<TutorProfileDTO.SubjectAvailabilityDTO> subjectsAvailability = null;
+            try {
+                if (profile.getSubjectsAvailabilityJson() != null) {
+                    subjectsAvailability = mapper.readValue(profile.getSubjectsAvailabilityJson(),
+                            new TypeReference<List<TutorProfileDTO.SubjectAvailabilityDTO>>() {});
+                }
+            } catch (Exception e) {
+                throw new RuntimeException("Error parsing subjects availability JSON", e);
+            }
+
+            return new TutorProfileDTO(
+                    user.getId(),                 // ← FIXED: use users.id
+                    user.getName(),
+                    user.getEmail(),
+                    profile.getPhone(),
+                    profile.getRole(),
+                    subjectsAvailability,
+                    profile.getExperience(),
+                    profile.getBio(),
+                    profile.getHourlyRate(),
+                    profile.getLocation()
+            );
+        }).toList();
     }
 }

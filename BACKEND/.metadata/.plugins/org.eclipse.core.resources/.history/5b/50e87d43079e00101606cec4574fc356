@@ -1,0 +1,54 @@
+package com.tutorfinder.dto;
+
+public class BookingResponseDTO {
+    private Long id;
+    private Long studentId;
+    private String studentName;
+    private String studentEmail;
+    private String studentPhone;
+    private Long tutorId;
+    private String tutorName;
+    private String status;
+    private String subject;
+    private String timeSlot;
+
+    public BookingResponseDTO(Long id, Long studentId, String studentName,
+                              String studentEmail, String studentPhone,
+                              Long tutorId, String tutorName, String status,
+                              String subject, String timeSlot) {
+        this.id = id;
+        this.studentId = studentId;
+        this.studentName = studentName;
+        this.studentEmail = studentEmail;
+        this.studentPhone = studentPhone;
+        this.tutorId = tutorId;
+        this.tutorName = tutorName;
+        this.status = status;
+        this.subject = subject;
+        this.timeSlot = timeSlot;
+    }
+
+    // Getters
+    public Long getId() { return id; }
+    public Long getStudentId() { return studentId; }
+    public String getStudentName() { return studentName; }
+    public String getStudentEmail() { return studentEmail; }
+    public String getStudentPhone() { return studentPhone; }
+    public Long getTutorId() { return tutorId; }
+    public String getTutorName() { return tutorName; }
+    public String getStatus() { return status; }
+    public String getSubject() { return subject; }
+    public String getTimeSlot() { return timeSlot; }
+
+    // Setters
+    public void setId(Long id) { this.id = id; }
+    public void setStudentId(Long studentId) { this.studentId = studentId; }
+    public void setStudentName(String studentName) { this.studentName = studentName; }
+    public void setStudentEmail(String studentEmail) { this.studentEmail = studentEmail; }
+    public void setStudentPhone(String studentPhone) { this.studentPhone = studentPhone; }
+    public void setTutorId(Long tutorId) { this.tutorId = tutorId; }
+    public void setTutorName(String tutorName) { this.tutorName = tutorName; }
+    public void setStatus(String status) { this.status = status; }
+    public void setSubject(String subject) { this.subject = subject; }
+    public void setTimeSlot(String timeSlot) { this.timeSlot = timeSlot; }
+}
