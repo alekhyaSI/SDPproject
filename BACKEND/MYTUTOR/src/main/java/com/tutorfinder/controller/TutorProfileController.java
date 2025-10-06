@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/tutors/profile")
+@RequestMapping("/tutors/profile")
 @CrossOrigin(origins = "*")
 public class TutorProfileController {
 

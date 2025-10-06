@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/bookings")
+@RequestMapping("/bookings")
 @CrossOrigin(origins = "*")
 public class BookingController {
 
