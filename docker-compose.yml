@@ -8,7 +8,7 @@ services:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: sdpdb
     ports:
-      - "3307:3306"  # Host port 3307 mapped to container 3306
+      - "3307:3306"
     volumes:
       - mysql_data:/var/lib/mysql
     networks:
@@ -17,40 +17,34 @@ services:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
       interval: 10s
       timeout: 5s
-      retries: 10
-      start_period: 60s  # Increase to allow MySQL to initialize fully
+      retries: 5
+      start_period: 30s
 
   backend:
-    image: alekhyasi/docker-mytutor-backend:latest
+    image: alekhyasi/docker-mytutor-backend:latest   
     container_name: springboot
     ports:
-      - "2025:2025"
+      - "2025:2025"   
     depends_on:
       mysqlpro:
         condition: service_healthy
-    restart: always
+    restart: on-failure
     networks:
       - springboot-mysql-net
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysqlpro:3306/sdpdb
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: root
-      SPRING_JPA_HIBERNATE_DDL_AUTO: update
-      SPRING_JPA_SHOW_SQL: "true"
 
   frontend:
-    image: alekhyasi/docker-mytutor-frontend:latest
+    image: alekhyasi/docker-mytutor-frontend:latest  
     container_name: react
     ports:
       - "3000:80"
     depends_on:
       - backend
-    restart: always
+    restart: on-failure
     networks:
       - springboot-mysql-net
     environment:
-      VITE_BACKEND_URL: http://backend:2025
-
+      - VITE_BACKEND_URL=http://localhost:2025
+ 
 volumes:
   mysql_data:
 
