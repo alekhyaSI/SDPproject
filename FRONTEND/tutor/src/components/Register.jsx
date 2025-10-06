@@ -38,7 +38,7 @@ const Register = () => {
 
     try {
       const response = await axios.post(
-        `${BASE_URL}/api/user/register`, // <-- corrected endpoint
+        `${BASE_URL}/user/register`, // <-- corrected endpoint
         { ...formData, role },
         { withCredentials: true }       // <-- ensures cookies sent if needed
       );

@@ -11,8 +11,8 @@ const AdminApprovals = ({ type }) => {
     try {
       const url =
         type === "tutor"
-          ? `${API_BASE_URL}/api/user/tutors?pending=true`
-          : `${API_BASE_URL}/api/user/students?pending=true`;
+          ? `${API_BASE_URL}/user/tutors?pending=true`
+          : `${API_BASE_URL}/user/students?pending=true`;
       const res = await axios.get(url);
       setPendingList(res.data.data || []);
     } catch (err) {
@@ -27,7 +27,7 @@ const AdminApprovals = ({ type }) => {
 
   const handleDecision = async (id, approve) => {
     try {
-      await axios.post(`${API_BASE_URL}/api/user/admin/${approve ? "approve" : "reject"}/${type}/${id}`);
+      await axios.post(`${API_BASE_URL}/user/admin/${approve ? "approve" : "reject"}/${type}/${id}`);
       fetchPending();
     } catch (err) {
       console.error(err);
