@@ -11,7 +11,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/user")
-@CrossOrigin // Allow frontend to access backend
+@CrossOrigin(origins = "*")
 public class UserController {
 
     @Autowired
