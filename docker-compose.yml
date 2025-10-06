@@ -1,3 +1,5 @@
+version: "3.9"
+
 services:
   mysqlpro:
     image: mysql:8
@@ -19,22 +21,19 @@ services:
       start_period: 30s
 
   backend:
-    build:
-      context: ./BACKEND/MYTUTOR
-      dockerfile: backend.Dockerfile
+    image: alekhyasi/docker-mytutor-backend:latest   # ✅ using prebuilt image
     container_name: springboot
     ports:
-      - "2025:2025"
+      - "2025:2000"   # ✅ maps container port 2000 (Spring Boot’s internal port) to host 2025
     depends_on:
-      - mysqlpro
+      mysqlpro:
+        condition: service_healthy
     restart: on-failure
     networks:
       - springboot-mysql-net
 
   frontend:
-    build:
-      context: ./FRONTEND/tutor
-      dockerfile: frontend.Dockerfile
+    image: alekhyasi/docker-mytutor-frontend:latest  # ✅ using prebuilt image
     container_name: react
     ports:
       - "3000:80"
@@ -43,6 +42,8 @@ services:
     restart: on-failure
     networks:
       - springboot-mysql-net
+    environment:
+      - VITE_BACKEND_URL=http://localhost:2025  # ✅ frontend talks to backend through host port
 
 volumes:
   mysql_data:
