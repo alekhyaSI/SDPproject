@@ -23,7 +23,7 @@ services:
     image: alekhyasi/docker-mytutor-backend:latest   
     container_name: springboot
     ports:
-      - "2025:2000"   
+      - "2025:2025"   
     depends_on:
       mysqlpro:
         condition: service_healthy
