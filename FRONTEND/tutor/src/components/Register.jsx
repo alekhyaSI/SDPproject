@@ -37,11 +37,13 @@ const Register = () => {
     const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
     try {
-      const response = await axios.post(
-        `${BASE_URL}/user/register`, // <-- corrected endpoint
-        { ...formData, role },
-        { withCredentials: true }       // <-- ensures cookies sent if needed
-      );
+      // Always use POST for registration
+      const response = await axios({
+        method: "post",
+        url: `${BASE_URL}/user/register`,
+        data: { ...formData, role },
+        withCredentials: true
+      });
 
       alert("Registered successfully");
       console.log("Registered User: ", response.data);
@@ -50,8 +52,10 @@ const Register = () => {
       console.error("Error during registration:", err);
       if (err.response && err.response.data) {
         alert(`Registration failed: ${err.response.data.message || err.response.data}`);
+      } else if (err.request) {
+        alert("Registration failed! Backend not reachable. Check server and network.");
       } else {
-        alert("Registration failed! Check backend server.");
+        alert("Registration failed! Unknown error.");
       }
     }
   };
