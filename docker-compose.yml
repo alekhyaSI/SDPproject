@@ -43,7 +43,8 @@ services:
     networks:
       - springboot-mysql-net
     environment:
-      - VITE_API_URL=http://springboot:2025   
+      - VITE_BACKEND_URL=http://backend:2025
+ 
 volumes:
   mysql_data:
 
