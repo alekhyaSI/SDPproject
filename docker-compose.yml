@@ -1,3 +1,4 @@
+version: "3.9"
 
 services:
   mysqlpro:
@@ -41,7 +42,8 @@ services:
     restart: on-failure
     networks:
       - springboot-mysql-net
-    
+    environment:
+      - VITE_API_URL=http://springboot:2025   
 volumes:
   mysql_data:
 
