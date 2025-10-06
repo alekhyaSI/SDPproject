@@ -41,8 +41,7 @@ services:
     restart: on-failure
     networks:
       - springboot-mysql-net
-    environment:
-      - VITE_BACKEND_URL=http://localhost:2025  
+    
 volumes:
   mysql_data:
 
